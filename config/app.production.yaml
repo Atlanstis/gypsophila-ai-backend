@@ -1,0 +1,48 @@
+# 应用配置
+app:
+  name: Gypsophila AI Backend
+  env: production
+  port: 3000
+  url: https://api.gypsophila-ai.com
+  prefix: /api
+
+# 数据库配置
+database:
+  type: mysql
+  host: mysql.production
+  port: 3306
+  username: prod_user
+  password: prod_password
+  database: gypsophila_prod
+  synchronize: false  # 生产环境不同步数据库结构
+  logging: false      # 生产环境不记录SQL日志
+
+# JWT配置
+jwt:
+  secret: your-production-jwt-secret-key
+  expiresIn: 15m
+  refreshExpiresIn: 7d
+
+# 日志配置
+logger:
+  level: info  # 生产环境日志级别调整为info
+  maxFiles: 90 # 保留90天的日志
+  maxSize: 20971520 # 20MB
+
+# CORS配置
+cors:
+  enabled: true
+  origin: https://www.gypsophila-ai.com
+  methods: GET,HEAD,PUT,PATCH,POST,DELETE
+  credentials: true
+
+# 安全配置
+security:
+  rateLimiter:
+    enabled: true
+    windowMs: 60000   # 1分钟
+    max: 60          # 每分钟最多60次请求
+  helmet:
+    enabled: true
+  compression:
+    enabled: true 

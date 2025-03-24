@@ -153,9 +153,88 @@ ResponseHelper.error(statusCode, message, request, error);
 - 通过请求体传递
 - 用于获取新的令牌对
 
-### 6. 使用示例
+### 6. 配置系统
 
-#### 6.1 正常响应
+本项目使用YAML文件作为配置，支持多环境配置和配置验证。
+
+#### 6.1 配置文件
+
+配置文件位于项目根目录的 `config` 文件夹中：
+
+- `app.yaml` - 开发环境配置
+- `app.test.yaml` - 测试环境配置
+- `app.production.yaml` - 生产环境配置
+
+系统会根据 `NODE_ENV` 环境变量自动选择相应的配置文件。
+
+#### 6.2 配置结构
+
+配置文件包含以下主要部分：
+
+```yaml
+# 应用配置
+app:
+  name: Gypsophila AI Backend
+  env: development
+  port: 3000
+  url: http://localhost:3000
+  prefix: /api
+
+# 数据库配置
+database:
+  type: mysql
+  host: localhost
+  port: 3306
+  username: root
+  password: password
+  database: gypsophila
+  synchronize: true
+  logging: true
+
+# JWT配置
+jwt:
+  secret: your-jwt-secret-key
+  expiresIn: 15m
+  refreshExpiresIn: 7d
+# 其他配置...
+```
+
+#### 6.3 配置验证
+
+所有配置都经过Joi验证，确保配置值的正确性和完整性：
+
+- 必填项缺失会导致应用启动失败
+- 类型错误会被检测出来
+- 对特定字段进行格式验证（如端口号范围、URL格式等）
+
+#### 6.4 使用配置
+
+在代码中通过注入 `ConfigService` 来使用配置：
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '../config/config.service';
+
+@Injectable()
+export class ExampleService {
+  constructor(private readonly configService: ConfigService) {}
+
+  someMethod() {
+    // 获取应用端口
+    const port = this.configService.get('app', 'port');
+
+    // 获取数据库配置
+    const dbConfig = this.configService.get('database');
+
+    // 获取JWT密钥
+    const jwtSecret = this.configService.get('jwt', 'secret');
+  }
+}
+```
+
+### 7. 接口示例
+
+#### 7.1 正常响应
 
 ```typescript
 @Get('users')
@@ -165,9 +244,9 @@ async getUsers() {
 }
 ```
 
-#### 6.2 自定义消息响应
+#### 7.2 自定义消息响应
 
-##### 6.2.1 通过装饰器设置消息（推荐）
+##### 7.2.1 通过装饰器设置消息（推荐）
 
 ```typescript
 @Get('users')
@@ -178,7 +257,7 @@ async getUsers() {
 }
 ```
 
-##### 6.2.2 通过返回对象设置消息
+##### 7.2.2 通过返回对象设置消息
 
 ```typescript
 @Post('users')
@@ -191,7 +270,7 @@ async createUser() {
 }
 ```
 
-#### 6.3 抛出业务异常
+#### 7.3 抛出业务异常
 
 ```typescript
 @Get('users/:id')
@@ -204,7 +283,7 @@ async getUser(@Param('id') id: string) {
 }
 ```
 
-#### 6.4 抛出授权异常
+#### 7.4 抛出授权异常
 
 ```typescript
 @Get('protected')
@@ -223,9 +302,9 @@ async getProtectedResource(@Headers('authorization') auth: string) {
 }
 ```
 
-### 7. 认证接口
+### 8. 认证接口
 
-#### 7.1 登录
+#### 8.1 登录
 
 ```http
 POST /auth/login
@@ -260,7 +339,7 @@ Content-Type: application/json
 }
 ```
 
-#### 7.2 刷新令牌
+#### 8.2 刷新令牌
 
 ```http
 POST /auth/refresh
@@ -294,24 +373,56 @@ Content-Type: application/json
 }
 ```
 
-### 8. 开发说明
+### 9. 开发说明
 
-#### 8.1 环境变量
+#### 9.1 环境准备
 
-```env
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-```
+确保已安装Node.js (>=16.x)和pnpm。
 
-#### 8.2 依赖安装
+#### 9.2 安装依赖
 
 ```bash
 pnpm install
 ```
 
-#### 8.3 开发服务器
+#### 9.3 开发服务器
 
 ```bash
+# 开发环境（默认）
 pnpm start:dev
+
+# 测试环境
+pnpm start:test
+
+# 生产环境构建
+pnpm build:production
+
+# 生产环境运行
+pnpm start:production
+
+# 或者使用 start:prod 运行编译后的代码
+pnpm start:prod
+```
+
+#### 9.4 构建项目
+
+```bash
+# 默认构建
+pnpm build
+
+# 生产环境构建
+pnpm build:production
+```
+
+#### 9.5 测试
+
+```bash
+# 单元测试
+pnpm test
+
+# e2e测试
+pnpm test:e2e
+
+# 测试覆盖率
+pnpm test:cov
 ```

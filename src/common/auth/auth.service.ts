@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { StatusCode } from '../enums/status-code.enum';
 import { AuthException } from '../exceptions/auth.exception';
+import { ConfigService } from '../../config/config.service';
 
 /**
  * Token对类型定义
@@ -26,19 +27,33 @@ export interface JwtPayload {
  */
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   /**
    * 生成令牌对
    */
-  generateTokens(userId: string, username: string) {
-    const payload = { sub: userId, username };
+  generateTokens(userId: string, username: string): TokenPair {
+    const accessPayload: JwtPayload = {
+      sub: userId,
+      username,
+      type: 'access',
+    };
+
+    const refreshPayload: JwtPayload = {
+      sub: userId,
+      username,
+      type: 'refresh',
+    };
+
     return {
-      accessToken: this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+      accessToken: this.jwtService.sign(accessPayload, {
+        expiresIn: this.configService.get('jwt', 'expiresIn'),
       }),
-      refreshToken: this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+      refreshToken: this.jwtService.sign(refreshPayload, {
+        expiresIn: this.configService.get('jwt', 'refreshExpiresIn'),
       }),
     };
   }
@@ -46,41 +61,54 @@ export class AuthService {
   /**
    * 刷新令牌
    */
-  refreshTokens(refreshToken: string) {
+  refreshTokens(refreshToken: string): TokenPair {
     try {
-      const payload = this.jwtService.verify(refreshToken);
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get('jwt', 'secret'),
+      }) as JwtPayload;
+
+      // 确保是刷新令牌
+      if (payload.type !== 'refresh') {
+        throw new AuthException(
+          '无效的刷新令牌',
+          StatusCode.REFRESH_TOKEN_INVALID,
+        );
+      }
+
       return this.generateTokens(payload.sub, payload.username);
     } catch (error) {
+      if (error instanceof AuthException) {
+        throw error;
+      }
+
       if (error.name === 'TokenExpiredError') {
         throw new AuthException(
           '刷新令牌已过期',
           StatusCode.REFRESH_TOKEN_EXPIRED,
         );
       }
-      if (error.name === 'JsonWebTokenError') {
-        throw new AuthException(
-          '无效的刷新令牌',
-          StatusCode.REFRESH_TOKEN_INVALID,
-        );
-      }
-      throw new AuthException('令牌已过期', StatusCode.TOKEN_EXPIRED);
+
+      throw new AuthException(
+        '无效的刷新令牌',
+        StatusCode.REFRESH_TOKEN_INVALID,
+      );
     }
   }
 
   /**
    * 验证访问令牌
    */
-  verifyToken(token: string) {
+  verifyToken(token: string): JwtPayload {
     try {
-      return this.jwtService.verify(token);
+      return this.jwtService.verify(token, {
+        secret: this.configService.get('jwt', 'secret'),
+      }) as JwtPayload;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         throw new AuthException('令牌已过期', StatusCode.TOKEN_EXPIRED);
       }
-      if (error.name === 'JsonWebTokenError') {
-        throw new AuthException('无效的令牌', StatusCode.TOKEN_INVALID);
-      }
-      throw error;
+
+      throw new AuthException('无效的令牌', StatusCode.TOKEN_INVALID);
     }
   }
 }

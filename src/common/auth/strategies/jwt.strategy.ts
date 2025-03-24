@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { StatusCode } from '../../enums/status-code.enum';
 import { AuthException } from '../../exceptions/auth.exception';
 import { JwtPayload } from '../auth.service';
+import { ConfigService } from '../../../config/config.service';
 
 /**
  * JWT策略
@@ -11,11 +12,11 @@ import { JwtPayload } from '../auth.service';
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'secretKey',
+      secretOrKey: configService.get('jwt', 'secret'),
     });
   }
 
