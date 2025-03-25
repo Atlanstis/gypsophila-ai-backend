@@ -3,7 +3,6 @@ app:
   name: Gypsophila AI Backend
   env: production
   port: 3000
-  url: https://api.gypsophila-ai.com
   prefix: /api
 
 # 数据库配置
@@ -26,8 +25,11 @@ jwt:
 # 日志配置
 logger:
   level: info  # 生产环境日志级别调整为info
-  maxFiles: 90 # 保留90天的日志
-  maxSize: 20971520 # 20MB
+  console: false # 生产环境不输出到控制台
+  file:
+    enabled: true
+    maxFiles: 90 # 保留90天的日志
+    maxSize: 20971520 # 20MB
 
 # CORS配置
 cors:

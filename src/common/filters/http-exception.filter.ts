@@ -4,20 +4,20 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { BusinessException } from '../exceptions/business.exception';
 import { AuthException } from '../exceptions/auth.exception';
 import { StatusCode } from '../enums/status-code.enum';
 import { ResponseHelper } from '../helpers/response.helper';
+import { LoggerService } from '../../logger/logger.service';
 
 /**
  * 全局HTTP异常过滤器
  */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(HttpExceptionFilter.name);
+  constructor(private readonly logger: LoggerService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -81,9 +81,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (process.env.NODE_ENV !== 'production') {
       error = exception instanceof Error ? String(exception.stack) : undefined;
-      this.logger.error(message, error);
+      this.logger.error(message, 'HttpExceptionFilter', error);
     } else {
-      this.logger.error(message);
+      this.logger.error(message, 'HttpExceptionFilter');
     }
 
     const responseBody = ResponseHelper.error(

@@ -3,7 +3,6 @@ app:
   name: Gypsophila AI Backend
   env: test
   port: 3000
-  url: http://test-api.gypsophila-ai.com
   prefix: /api
 
 # 数据库配置
@@ -26,8 +25,11 @@ jwt:
 # 日志配置
 logger:
   level: debug
-  maxFiles: 10
-  maxSize: 10485760 # 10MB
+  console: true
+  file:
+    enabled: true
+    maxFiles: 10
+    maxSize: 10485760 # 10MB
 
 # CORS配置
 cors:

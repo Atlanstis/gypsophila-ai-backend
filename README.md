@@ -177,7 +177,6 @@ app:
   name: Gypsophila AI Backend
   env: development
   port: 3000
-  url: http://localhost:3000
   prefix: /api
 
 # 数据库配置
@@ -205,9 +204,145 @@ jwt:
 
 - 必填项缺失会导致应用启动失败
 - 类型错误会被检测出来
-- 对特定字段进行格式验证（如端口号范围、URL格式等）
+- 对特定字段进行格式验证（如端口号等）
 
-#### 6.4 使用配置
+#### 6.4 日志配置
+
+系统使用 Winston 作为日志记录工具，支持控制台输出和文件记录两种方式，可以在配置文件中进行设置：
+
+```yaml
+# 日志配置
+logger:
+  level: debug # 日志级别: error, warn, info, http, verbose, debug, silly
+  console: true # 是否输出到控制台
+  file:
+    enabled: true # 是否记录到文件
+    maxFiles: 30 # 保留的日志文件数量
+    maxSize: 10485760 # 单个日志文件最大大小 (默认 10MB)
+```
+
+##### 日志特性
+
+- **按日期切割**：日志文件按天自动分割，文件名格式为 `[类型]-YYYY-MM-DD.log`
+- **文件压缩**：旧的日志文件会自动压缩为 gzip 格式
+- **多种日志**：系统会自动创建三种日志文件：
+  - `error-YYYY-MM-DD.log`：仅记录错误级别的日志
+  - `access-YYYY-MM-DD.log`：记录 HTTP 请求和响应
+  - `combined-YYYY-MM-DD.log`：记录所有级别的日志
+- **文件数量限制**：通过 `maxFiles` 配置控制保留的日志文件数量
+- **文件大小限制**：通过 `maxSize` 配置控制单个日志文件大小，超出大小会自动创建新文件
+
+##### 环境差异
+
+- **开发环境**：默认同时启用控制台和文件日志
+- **测试环境**：默认同时启用控制台和文件日志，但文件数量限制为 10 个
+- **生产环境**：默认仅启用文件日志（禁用控制台输出），文件数量限制为 90 个，文件大小为 20MB
+
+##### 日志模块使用说明
+
+系统提供了 `LoggerService` 用于在代码中记录日志，它是对 Winston 的封装，提供了更便捷的使用方式。
+
+###### 1. 在服务或控制器中注入并使用
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { LoggerService } from '../logger/logger.service';
+
+@Injectable()
+export class UserService {
+  constructor(private readonly logger: LoggerService) {
+    // 设置日志上下文，方便区分不同模块的日志
+    this.logger.setContext('UserService');
+  }
+
+  async findUser(userId: string) {
+    this.logger.debug(`查找用户: ${userId}`);
+
+    try {
+      // 业务逻辑...
+      const user = await this.userRepository.findOne(userId);
+
+      if (!user) {
+        this.logger.warn(`用户不存在: ${userId}`);
+        return null;
+      }
+
+      this.logger.info(`成功获取用户: ${userId}`);
+      return user;
+    } catch (error) {
+      this.logger.error(`获取用户失败: ${userId}`, error.stack);
+      throw error;
+    }
+  }
+}
+```
+
+###### 2. 日志级别
+
+`LoggerService` 提供了多种日志级别方法，从低到高依次是：
+
+- `logger.debug()` - 调试信息，仅在开发环境使用
+- `logger.verbose()` - 详细信息，包含更多细节
+- `logger.info()` - 普通信息，表示重要事件
+- `logger.warn()` - 警告信息，表示潜在问题
+- `logger.error()` - 错误信息，表示运行时错误
+
+###### 3. 添加请求ID跟踪
+
+在HTTP请求处理流程中，可以添加请求ID以便跟踪完整的请求生命周期：
+
+```typescript
+import { Controller, Get, Req } from '@nestjs/common';
+import { LoggerService } from '../logger/logger.service';
+import { Request } from 'express';
+
+@Controller('api')
+export class ApiController {
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext('ApiController');
+  }
+
+  @Get('data')
+  async getData(@Req() request: Request) {
+    // 使用请求ID记录日志
+    const requestId = request.headers['x-request-id'] || 'unknown';
+    this.logger.setRequestId(requestId);
+
+    this.logger.info('处理获取数据请求');
+    // 业务逻辑...
+
+    return { data: 'some data' };
+  }
+}
+```
+
+###### 4. 记录结构化数据
+
+可以记录包含元数据的结构化日志：
+
+```typescript
+this.logger.info('用户登录成功', {
+  userId: user.id,
+  email: user.email,
+  ipAddress: request.ip,
+  userAgent: request.headers['user-agent'],
+});
+```
+
+###### 5. 记录异常堆栈
+
+捕获并记录异常时，可以传入完整的错误堆栈：
+
+```typescript
+try {
+  // 业务逻辑...
+} catch (error) {
+  this.logger.error('操作失败', error.stack);
+  throw error;
+}
+```
+
+#### 6.5 使用配置
 
 在代码中通过注入 `ConfigService` 来使用配置：
 

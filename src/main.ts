@@ -2,20 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from './config/config.service';
-import * as helmet from 'helmet';
-import * as compression from 'compression';
+import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import * as compression from 'compression';
+import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 获取配置服务
-  const configService = app.get(ConfigService);
-  const appConfig = configService.get('app');
-  const securityConfig = configService.get('security');
-
-  // 设置全局前缀
-  app.setGlobalPrefix(appConfig.prefix);
+  // 获取日志记录器
+  const logger = app.get(LoggerService);
 
   // 启用全局验证管道
   app.useGlobalPipes(
@@ -26,15 +22,25 @@ async function bootstrap() {
     }),
   );
 
+  // 获取配置服务
+  const configService = app.get(ConfigService);
+  const appConfig = configService.get('app');
+  const securityConfig = configService.get('security');
+
+  // 设置全局前缀
+  app.setGlobalPrefix(appConfig.prefix);
+
   // 配置安全中间件
   if (securityConfig.helmet.enabled) {
-    app.use(helmet);
+    app.use(helmet());
   }
 
+  // 配置压缩中间件
   if (securityConfig.compression.enabled) {
     app.use(compression());
   }
 
+  // 配置速率限制中间件
   if (securityConfig.rateLimiter.enabled) {
     app.use(
       rateLimit({
@@ -56,7 +62,7 @@ async function bootstrap() {
 
   // 启动应用
   await app.listen(appConfig.port);
-  console.log(`应用已启动: ${appConfig.url}${appConfig.prefix}`);
+  logger.info(`应用已启动，端口：${appConfig.port}`, 'Bootstrap');
 }
 
 bootstrap();

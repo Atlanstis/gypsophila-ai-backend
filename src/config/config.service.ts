@@ -1,7 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger as NestLogger } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { parse } from 'yaml';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 import { configSchema } from './config.schema';
 import { BusinessException } from '../common/exceptions/business.exception';
 import { StatusCode } from '../common/enums/status-code.enum';
@@ -14,7 +16,6 @@ export interface Config {
     name: string;
     env: string;
     port: number;
-    url: string;
     prefix: string;
   };
   database: {
@@ -65,10 +66,32 @@ export interface Config {
 @Injectable()
 export class ConfigService {
   private readonly config: Config;
-  private readonly serviceLogger = new Logger(ConfigService.name);
+  private readonly nestLogger = new NestLogger(ConfigService.name);
 
-  constructor() {
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {
     this.config = this.loadConfig();
+  }
+
+  /**
+   * 记录日志
+   * 如果 Winston Logger 可用则使用它，否则使用 NestJS Logger
+   */
+  private logInfo(message: string): void {
+    if (this.logger) {
+      this.logger.info(message, { context: 'ConfigService' });
+    } else {
+      this.nestLogger.log(message);
+    }
+  }
+
+  private logError(message: string): void {
+    if (this.logger) {
+      this.logger.error(message, { context: 'ConfigService' });
+    } else {
+      this.nestLogger.error(message);
+    }
   }
 
   /**
@@ -93,20 +116,20 @@ export class ConfigService {
         const errorDetails = error.details
           .map((detail) => detail.message)
           .join(', ');
-        this.serviceLogger.error(`配置验证失败: ${errorDetails}`);
+        this.logError(`配置验证失败: ${errorDetails}`);
         throw new BusinessException(
           `配置验证失败: ${errorDetails}`,
           StatusCode.INTERNAL_SERVER_ERROR,
         );
       }
 
-      this.serviceLogger.log('配置加载成功');
+      this.logInfo('配置加载成功');
       return value;
     } catch (error) {
       if (error instanceof BusinessException) {
         throw error;
       }
-      this.serviceLogger.error(`加载配置文件失败: ${error.message}`);
+      this.logError(`加载配置文件失败: ${error.message}`);
       throw new BusinessException(
         `加载配置文件失败: ${error.message}`,
         StatusCode.INTERNAL_SERVER_ERROR,

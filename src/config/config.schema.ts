@@ -7,7 +7,6 @@ export const appConfigSchema = Joi.object({
   name: Joi.string().required(),
   env: Joi.string().valid('development', 'test', 'production').required(),
   port: Joi.number().port().default(3000),
-  url: Joi.string().uri().required(),
   prefix: Joi.string().default('/api'),
 });
 
@@ -41,8 +40,12 @@ export const loggerConfigSchema = Joi.object({
   level: Joi.string()
     .valid('error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly')
     .default('info'),
-  maxFiles: Joi.number().default(30),
-  maxSize: Joi.number().default(10485760), // 10MB
+  console: Joi.boolean().default(true),
+  file: Joi.object({
+    enabled: Joi.boolean().default(true),
+    maxFiles: Joi.number().default(30),
+    maxSize: Joi.number().default(10485760), // 10MB
+  }).default(),
 });
 
 /**
