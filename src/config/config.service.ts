@@ -28,6 +28,13 @@ export interface Config {
     synchronize: boolean;
     logging: boolean;
   };
+  redis: {
+    host: string;
+    port: number;
+    password?: string;
+    db: number;
+    keyPrefix: string;
+  };
   jwt: {
     secret: string;
     expiresIn: string;

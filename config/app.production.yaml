@@ -16,6 +16,13 @@ database:
   synchronize: false  # 生产环境不同步数据库结构
   logging: false      # 生产环境不记录SQL日志
 
+# Redis配置
+redis:
+  host: localhost
+  port: 6379
+  password: 'production-redis-password'
+  db: 0
+  keyPrefix: ''
 # JWT配置
 jwt:
   secret: your-production-jwt-secret-key

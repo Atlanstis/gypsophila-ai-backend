@@ -3,12 +3,14 @@ import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ConfigModule } from './config/config.module';
 import { LoggerModule } from './logger/logger.module';
+import { DatabaseModule } from './database/database.module';
+import { RedisModule } from './redis/redis.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
 
 @Module({
-  imports: [ConfigModule, LoggerModule],
+  imports: [ConfigModule, LoggerModule, DatabaseModule, RedisModule],
   controllers: [AppController],
   providers: [
     AppService,

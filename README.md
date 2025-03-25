@@ -561,3 +561,175 @@ pnpm test:e2e
 # 测试覆盖率
 pnpm test:cov
 ```
+
+## 数据库配置
+
+### MySQL 配置
+
+项目使用 TypeORM 作为 ORM 框架，支持 MySQL 数据库。数据库配置位于 `config/app.yaml` 文件中：
+
+```yaml
+database:
+  type: mysql
+  host: localhost
+  port: 3306
+  username: 'root'
+  password: 'your-password'
+  database: 'gypsophila-ai'
+  synchronize: true # 开发环境建议开启，生产环境建议关闭
+  logging: true # 开发环境建议开启，生产环境建议关闭
+```
+
+#### 数据库迁移
+
+1. 创建迁移
+
+```bash
+pnpm typeorm migration:create src/database/migrations/MigrationName
+```
+
+2. 生成迁移
+
+```bash
+pnpm typeorm migration:generate src/database/migrations/MigrationName
+```
+
+3. 运行迁移
+
+```bash
+pnpm typeorm migration:run
+```
+
+4. 回滚迁移
+
+```bash
+pnpm typeorm migration:revert
+```
+
+### Redis 配置
+
+项目使用 ioredis 作为 Redis 客户端，Redis 配置位于 `config/app.yaml` 文件中：
+
+```yaml
+redis:
+  host: localhost
+  port: 6379
+  password: '' # Redis 密码，如果有的话
+  db: 0 # Redis 数据库编号
+  keyPrefix: 'gypsophila:' # 键前缀，用于区分不同环境
+```
+
+#### Redis 服务使用示例
+
+```typescript
+import { RedisService } from './redis/redis.service';
+
+@Injectable()
+export class YourService {
+  constructor(private readonly redisService: RedisService) {}
+
+  async example() {
+    // 设置键值对
+    await this.redisService.set('key', 'value', 3600); // 1小时过期
+
+    // 获取值
+    const value = await this.redisService.get('key');
+
+    // 删除键
+    await this.redisService.delete('key');
+
+    // 检查键是否存在
+    const exists = await this.redisService.exists('key');
+
+    // 设置过期时间
+    await this.redisService.expire('key', 7200); // 2小时过期
+
+    // 哈希表操作
+    await this.redisService.hset('hash', 'field', 'value');
+    const hashValue = await this.redisService.hget('hash', 'field');
+    const allHash = await this.redisService.hgetall('hash');
+  }
+}
+```
+
+#### Redis 最佳实践
+
+1. 键命名规范
+
+   - 使用冒号分隔的命名空间
+   - 例如：`gypsophila:user:1:profile`
+
+2. 过期时间设置
+
+   - 为所有缓存键设置合理的过期时间
+   - 避免使用过长的过期时间
+   - 考虑使用滑动过期时间
+
+3. 错误处理
+
+   - Redis 服务会自动处理连接错误
+   - 建议在业务代码中处理 Redis 操作异常
+
+4. 性能优化
+
+   - 使用管道（pipeline）批量处理多个操作
+   - 合理使用 Redis 事务
+   - 避免使用过大的键值
+
+5. 监控
+   - 监控 Redis 内存使用情况
+   - 监控 Redis 连接状态
+   - 监控 Redis 命令执行时间
+
+## 环境要求
+
+- Node.js >= 16
+- MySQL >= 8.0
+- Redis >= 6.0
+
+## 开发环境设置
+
+1. 安装依赖
+
+```bash
+pnpm install
+```
+
+2. 配置环境变量
+
+- 复制 `.env.example` 到 `.env`
+- 修改数据库和 Redis 配置
+
+3. 启动开发服务器
+
+```bash
+pnpm start:dev
+```
+
+## 生产环境部署
+
+1. 构建应用
+
+```bash
+pnpm build
+```
+
+2. 启动生产服务器
+
+```bash
+pnpm start:prod
+```
+
+## 测试
+
+```bash
+# 单元测试
+pnpm test
+
+# e2e 测试
+pnpm test:e2e
+```
+
+## 许可证
+
+[MIT licensed](LICENSE)

@@ -1,5 +1,4 @@
 import * as winston from 'winston';
-import { join } from 'path';
 import * as fs from 'fs';
 import { type WinstonModuleOptions } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';

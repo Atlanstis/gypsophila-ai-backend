@@ -16,6 +16,13 @@ database:
   synchronize: true
   logging: true
 
+# Redis配置
+redis:
+  host: localhost
+  port: 6379
+  password: ''
+  db: 1
+  keyPrefix: ''
 # JWT配置
 jwt:
   secret: your-test-jwt-secret-key

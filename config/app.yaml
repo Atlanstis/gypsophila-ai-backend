@@ -10,12 +10,19 @@ database:
   type: mysql
   host: localhost
   port: 3306
-  username: root
-  password: password
-  database: gypsophila
+  username: 'root'
+  password: 'j!Y6hTwR'
+  database: 'gypsophila-ai'
   synchronize: true
   logging: true
 
+# Redis配置
+redis:
+  host: localhost
+  port: 6379
+  password: ''
+  db: 0
+  keyPrefix: ''
 # JWT配置
 jwt:
   secret: your-jwt-secret-key

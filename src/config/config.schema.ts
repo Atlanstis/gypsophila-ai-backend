@@ -25,6 +25,17 @@ export const databaseConfigSchema = Joi.object({
 });
 
 /**
+ * Redis配置验证模式
+ */
+export const redisConfigSchema = Joi.object({
+  host: Joi.string().required(),
+  port: Joi.number().port().default(6379),
+  password: Joi.string().allow('').optional(),
+  db: Joi.number().min(0).default(0),
+  keyPrefix: Joi.string().default(''),
+});
+
+/**
  * JWT配置验证模式
  */
 export const jwtConfigSchema = Joi.object({
@@ -84,6 +95,7 @@ export const securityConfigSchema = Joi.object({
 export const configSchema = Joi.object({
   app: appConfigSchema.required(),
   database: databaseConfigSchema.required(),
+  redis: redisConfigSchema.required(),
   jwt: jwtConfigSchema.required(),
   logger: loggerConfigSchema.default(),
   cors: corsConfigSchema.default(),
