@@ -1,7 +1,7 @@
 import * as winston from 'winston';
 import * as fs from 'fs';
 import { type WinstonModuleOptions } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '../config/config.service';
 import 'winston-daily-rotate-file';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -57,15 +57,13 @@ export const createLoggerConfig = (
   configService: ConfigService,
 ): WinstonModuleOptions => {
   const loggerConfig = configService.get('logger');
-  const logLevel = loggerConfig?.level || (isDevelopment ? 'debug' : 'info');
+  const logLevel = loggerConfig.level || (isDevelopment ? 'debug' : 'info');
   const consoleEnabled =
-    loggerConfig?.console !== undefined ? loggerConfig.console : true;
+    loggerConfig.console !== undefined ? loggerConfig.console : true;
   const fileEnabled =
-    loggerConfig?.file?.enabled !== undefined
-      ? loggerConfig.file.enabled
-      : true;
-  const maxFiles = loggerConfig?.file?.maxFiles || 30;
-  const maxSize = loggerConfig?.file?.maxSize || 10485760; // 10MB
+    loggerConfig.file?.enabled !== undefined ? loggerConfig.file.enabled : true;
+  const maxFiles = loggerConfig.file?.maxFiles || 30;
+  const maxSize = loggerConfig.file?.maxSize || 10485760; // 10MB
 
   const transports = [];
 

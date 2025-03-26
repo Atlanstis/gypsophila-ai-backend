@@ -1,14 +1,11 @@
-import { Injectable, NestMiddleware, Inject } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
 import { v4 as uuidv4 } from 'uuid';
+import { LoggerService } from './logger.service';
 
 @Injectable()
 export class RequestLoggerMiddleware implements NestMiddleware {
-  constructor(
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {}
+  constructor(private readonly loggerService: LoggerService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
     // 为每个请求生成唯一ID
@@ -41,10 +38,13 @@ export class RequestLoggerMiddleware implements NestMiddleware {
     };
 
     // 记录请求信息
-    this.logger.info(`请求开始: ${req.method} ${req.originalUrl || req.url}`, {
-      context: 'RequestLogger',
-      request: requestLog,
-    });
+    this.loggerService.info(
+      `请求开始: ${req.method} ${req.originalUrl || req.url}`,
+      'RequestLogger',
+      {
+        request: requestLog,
+      },
+    );
 
     // 捕获响应数据
     const originalSend = res.send;
@@ -102,19 +102,20 @@ export class RequestLoggerMiddleware implements NestMiddleware {
           : undefined,
       };
 
-      // 日志级别根据状态码决定
-      const logLevel = statusCode >= 400 ? 'warn' : 'info';
+      const msg = `请求结束: ${req.method} ${
+        req.originalUrl || req.url
+      } ${statusCode} ${responseTime}ms`;
 
-      // 记录响应信息
-      this.logger[logLevel](
-        `请求结束: ${req.method} ${
-          req.originalUrl || req.url
-        } ${statusCode} ${responseTime}ms`,
-        {
-          context: 'RequestLogger',
+      // 日志级别根据状态码决定
+      if (statusCode >= 400) {
+        this.loggerService.warn(msg, 'RequestLogger', {
           response: responseLog,
-        },
-      );
+        });
+      } else {
+        this.loggerService.info(msg, 'RequestLogger', {
+          response: responseLog,
+        });
+      }
     }.bind(this);
 
     next();

@@ -8,7 +8,6 @@ import { readFileSync } from 'fs';
  */
 function getConfigPath(): string {
   const env = process.env.NODE_ENV || 'development';
-  console.log(env);
   const configName = env === 'development' ? 'app.yaml' : `app.${env}.yaml`;
   return join(process.cwd(), 'config', configName);
 }
