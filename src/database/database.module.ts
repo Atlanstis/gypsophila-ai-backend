@@ -1,32 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigService } from '../config/config.service';
+import { dataSourceOptions } from './data-source';
 
 /**
  * 数据库模块
- * 集成TypeORM，从配置文件读取数据库配置
+ * 集成TypeORM，使用共享数据源配置
+ * 支持应用程序和数据库迁移工具使用同一配置
  */
 @Module({
-  imports: [
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const dbConfig = configService.get('database');
-
-        return {
-          type: dbConfig.type as any,
-          host: dbConfig.host,
-          port: dbConfig.port,
-          username: dbConfig.username,
-          password: dbConfig.password,
-          database: dbConfig.database,
-          synchronize: dbConfig.synchronize,
-          logging: dbConfig.logging,
-          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          autoLoadEntities: true,
-        };
-      },
-    }),
-  ],
+  imports: [TypeOrmModule.forRoot(dataSourceOptions)],
 })
 export class DatabaseModule {}

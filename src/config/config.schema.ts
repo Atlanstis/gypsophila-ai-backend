@@ -32,7 +32,7 @@ export const redisConfigSchema = Joi.object({
   port: Joi.number().port().default(6379),
   password: Joi.string().allow('').optional(),
   db: Joi.number().min(0).default(0),
-  keyPrefix: Joi.string().default(''),
+  keyPrefix: Joi.string().allow('').default(''),
 });
 
 /**

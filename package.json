@@ -22,7 +22,16 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "husky"
+    "prepare": "husky",
+    "typeorm": "cross-env NODE_ENV=development typeorm-ts-node-commonjs",
+    "typeorm:prod": "cross-env NODE_ENV=production typeorm-ts-node-commonjs",
+    "migration:generate": "pnpm typeorm -d src/database/data-source.ts migration:generate ./migrations/Table",
+    "migration:create": "pnpm typeorm migration:create ./migrations/Data",
+    "migration:run": "pnpm typeorm -d src/database/data-source.ts migration:run",
+    "migration:revert": "pnpm typeorm -d src/database/data-source.ts migration:revert",
+    "migration:show": "pnpm typeorm -d src/database/data-source.ts migration:show",
+    "migration:run:prod": "pnpm typeorm:prod -d src/database/data-source.ts migration:run",
+    "migration:revert:prod": "pnpm typeorm:prod -d src/database/data-source.ts migration:revert"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
