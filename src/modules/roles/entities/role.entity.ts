@@ -1,11 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from './user-role.entity';
 import { RoleMenu } from '../../menus/entities/role-menu.entity';
 import { RolePermission } from './role-permission.entity';
@@ -13,12 +6,13 @@ import {
   ROLE_DESCRIPTION_MAX_LENGTH,
   ROLE_NAME_MAX_LENGTH,
 } from '../constants';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 角色实体
  */
 @Entity('roles')
-export class Role {
+export class Role extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -30,12 +24,6 @@ export class Role {
 
   @Column({ name: 'is_builtin', default: false })
   isBuiltin: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @OneToMany(() => UserRole, (userRole) => userRole.role)
   userRoles: UserRole[];

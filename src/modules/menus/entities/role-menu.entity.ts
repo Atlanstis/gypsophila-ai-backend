@@ -1,6 +1,5 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -8,12 +7,13 @@ import {
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { Menu } from './menu.entity';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 角色菜单关联实体
  */
 @Entity('role_menus')
-export class RoleMenu {
+export class RoleMenu extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -22,9 +22,6 @@ export class RoleMenu {
 
   @Column({ name: 'menu_id', nullable: false })
   menuId: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 
   @ManyToOne(() => Role, (role) => role.roleMenus, {
     onDelete: 'CASCADE',

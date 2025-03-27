@@ -1,11 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserAuth } from './user-auth.entity';
 import { UserRole } from '../../roles/entities/user-role.entity';
 import {
@@ -13,12 +6,13 @@ import {
   USERNAME_MAX_LENGTH,
   USER_NAME_MAX_LENGTH,
 } from '../constants';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 用户实体
  */
 @Entity('users')
-export class User {
+export class User extends TimeEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -33,12 +27,6 @@ export class User {
 
   @Column({ name: 'is_builtin', default: false })
   isBuiltin: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @OneToMany(() => UserAuth, (userAuth) => userAuth.user)
   auths: UserAuth[];

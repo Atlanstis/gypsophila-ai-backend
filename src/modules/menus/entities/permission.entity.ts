@@ -1,21 +1,20 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { Menu } from './menu.entity';
 import { RolePermission } from '../../roles/entities/role-permission.entity';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 权限实体
  */
 @Entity('permissions')
-export class Permission {
+export class Permission extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -27,12 +26,6 @@ export class Permission {
 
   @Column({ length: 16, nullable: false })
   name: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @ManyToOne(() => Menu, (menu) => menu.permissions)
   @JoinColumn({ name: 'menu_id' })

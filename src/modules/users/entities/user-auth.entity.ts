@@ -1,13 +1,12 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 用户认证方式
@@ -20,7 +19,7 @@ export enum AuthType {
  * 用户认证实体
  */
 @Entity('user_auths')
-export class UserAuth {
+export class UserAuth extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -37,12 +36,6 @@ export class UserAuth {
 
   @Column({ name: 'auth_data', type: 'text', nullable: false })
   authData: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.auths, {
     onDelete: 'CASCADE',

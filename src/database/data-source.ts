@@ -41,6 +41,7 @@ function loadDatabaseConfig(): DataSourceOptions {
       entities: [join(__dirname, '..', '**', '*.entity{.ts,.js}')],
       migrations: [join(process.cwd(), 'migrations', '*{.ts,.js}')],
       migrationsTableName: 'migrations',
+      timezone: '+08:00', // 设置东八区时区
     };
   } catch (error) {
     console.error(`加载数据库配置失败: ${error.message}`);

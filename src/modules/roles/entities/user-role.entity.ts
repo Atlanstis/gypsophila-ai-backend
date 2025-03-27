@@ -1,6 +1,5 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -8,12 +7,13 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Role } from './role.entity';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 用户角色关联实体
  */
 @Entity('user_roles')
-export class UserRole {
+export class UserRole extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -22,9 +22,6 @@ export class UserRole {
 
   @Column({ name: 'role_id', nullable: false })
   roleId: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.userRoles, {
     onDelete: 'CASCADE',

@@ -1,6 +1,5 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -8,12 +7,13 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Permission } from '../../menus/entities/permission.entity';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 角色权限关联实体
  */
 @Entity('role_permissions')
-export class RolePermission {
+export class RolePermission extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -22,9 +22,6 @@ export class RolePermission {
 
   @Column({ name: 'permission_id', nullable: false })
   permissionId: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 
   @ManyToOne(() => Role, (role) => role.rolePermissions, {
     onDelete: 'CASCADE',

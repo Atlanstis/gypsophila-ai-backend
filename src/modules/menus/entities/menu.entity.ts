@@ -1,12 +1,10 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { Permission } from './permission.entity';
 import { RoleMenu } from './role-menu.entity';
@@ -17,6 +15,7 @@ import {
   MENU_NAME_MAX_LENGTH,
   MENU_PATH_MAX_LENGTH,
 } from '../constants';
+import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 菜单类型
@@ -37,7 +36,7 @@ export enum MenuModule {
  * 菜单实体
  */
 @Entity('menus')
-export class Menu {
+export class Menu extends TimeEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -81,12 +80,6 @@ export class Menu {
     default: MenuModule.ADMIN,
   })
   module: MenuModule;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @ManyToOne(() => Menu, (menu) => menu.children, {
     onDelete: 'CASCADE',
