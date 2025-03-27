@@ -126,3 +126,7 @@ You are a senior TypeScript programmer with experience in the NestJS framework a
 
 ### Language
 - Use Chinese to answer question.
+
+### Typeorm
+- 当存在 ManyToOne 或者 OneToOne 关系时，需在拥有外键的一方设置级联删除和更新。
+- 在同一个接口中，存在多次针对数据库的操作时，需开启事务，出错则进行回滚，参考使用 TransactionService 服务。

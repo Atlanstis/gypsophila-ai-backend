@@ -8,9 +8,20 @@ import { RedisModule } from './redis/redis.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
+import { UsersModule } from './modules/users/users.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { MenusModule } from './modules/menus/menus.module';
 
 @Module({
-  imports: [ConfigModule, LoggerModule, DatabaseModule, RedisModule],
+  imports: [
+    ConfigModule,
+    LoggerModule,
+    DatabaseModule,
+    RedisModule,
+    UsersModule,
+    RolesModule,
+    MenusModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

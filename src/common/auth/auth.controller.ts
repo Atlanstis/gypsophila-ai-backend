@@ -5,6 +5,8 @@ import { BusinessException } from '../exceptions/business.exception';
 import { StatusCode } from '../enums/status-code.enum';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { UsersService } from '../../modules/users/users.service';
+import * as argon2 from 'argon2';
 
 /**
  * 认证控制器
@@ -12,7 +14,10 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
  */
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   /**
    * 用户登录
@@ -20,18 +25,48 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     try {
-      // 在实际项目中，这里应该验证用户名和密码
-      // 本示例简化为固定的演示账号
-      if (loginDto.username === 'admin' && loginDto.password === 'password') {
-        // 登录成功，生成令牌对
-        return this.authService.generateTokens('1', loginDto.username);
+      // 通过用户名查找用户
+      const users = await this.usersService.findAll({
+        username: loginDto.username,
+      });
+
+      if (users.total === 0) {
+        throw new BusinessException(
+          '用户名或密码错误',
+          StatusCode.PASSWORD_ERROR,
+        );
       }
 
-      // 登录失败（使用业务异常，因为密码错误不是授权问题而是验证问题）
-      throw new BusinessException(
-        '用户名或密码错误',
-        StatusCode.PASSWORD_ERROR,
+      const user = users.items[0];
+
+      // 查找用户的密码认证
+      const userWithAuth = await this.usersService.findOne(user.id);
+      const passwordAuth = userWithAuth.auths.find(
+        (auth) => auth.authType === 'password',
       );
+
+      if (!passwordAuth) {
+        throw new BusinessException(
+          '用户未设置密码',
+          StatusCode.PASSWORD_ERROR,
+        );
+      }
+
+      // 验证密码
+      const isPasswordValid = await argon2.verify(
+        loginDto.password,
+        passwordAuth.authData,
+      );
+
+      if (!isPasswordValid) {
+        throw new BusinessException(
+          '用户名或密码错误',
+          StatusCode.PASSWORD_ERROR,
+        );
+      }
+
+      // 登录成功，生成令牌对
+      return this.authService.generateTokens(user.id, user.username);
     } catch (error) {
       if (error instanceof BusinessException) {
         throw error;

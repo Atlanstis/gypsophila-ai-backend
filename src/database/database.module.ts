@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './data-source';
+import { TransactionService } from './transaction.service';
 
 /**
  * 数据库模块
@@ -9,5 +10,7 @@ import { dataSourceOptions } from './data-source';
  */
 @Module({
   imports: [TypeOrmModule.forRoot(dataSourceOptions)],
+  providers: [TransactionService],
+  exports: [TransactionService],
 })
 export class DatabaseModule {}
