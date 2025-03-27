@@ -14,7 +14,7 @@ import { Menu } from './menu.entity';
  */
 @Entity('role_menus')
 export class RoleMenu {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ name: 'role_id', nullable: false })

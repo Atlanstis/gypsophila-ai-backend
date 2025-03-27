@@ -10,11 +10,11 @@ export class CreatePermissionDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(2, 100)
+  @Length(2, 32)
   key: string;
 
   @IsNotEmpty()
   @IsString()
-  @Length(2, 100)
+  @Length(2, 16)
   name: string;
 }

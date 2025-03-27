@@ -7,57 +7,67 @@ import {
   Length,
 } from 'class-validator';
 import { MenuModule, MenuType } from '../entities/menu.entity';
+import {
+  MENU_ICON_MAX_LENGTH,
+  MENU_KEY_MAX_LENGTH,
+  MENU_KEY_MIN_LENGTH,
+  MENU_LAYOUT_MAX_LENGTH,
+  MENU_NAME_MAX_LENGTH,
+  MENU_NAME_MIN_LENGTH,
+  MENU_PATH_MAX_LENGTH,
+  MENU_PATH_MIN_LENGTH,
+} from '../constants';
 
 /**
  * 更新菜单DTO
  */
 export class UpdateMenuDto {
-  @IsOptional()
   @IsString()
-  @Length(2, 100)
+  @Length(MENU_KEY_MIN_LENGTH, MENU_KEY_MAX_LENGTH)
+  @IsOptional()
   key?: string;
 
-  @IsOptional()
   @IsString()
-  @Length(2, 100)
+  @Length(MENU_NAME_MIN_LENGTH, MENU_NAME_MAX_LENGTH)
+  @IsOptional()
   name?: string;
 
-  @IsOptional()
   @IsEnum(MenuType)
+  @IsOptional()
   type?: MenuType;
 
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   parentId?: number;
 
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   orderNum?: number;
 
-  @IsOptional()
   @IsString()
-  @Length(1, 255)
+  @Length(MENU_PATH_MIN_LENGTH, MENU_PATH_MAX_LENGTH)
+  @IsOptional()
   path?: string;
 
-  @IsOptional()
   @IsString()
-  @Length(0, 100)
+  @Length(0, MENU_ICON_MAX_LENGTH)
+  @IsOptional()
   icon?: string;
 
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   isVisible?: boolean;
 
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   isCached?: boolean;
 
-  @IsOptional()
   @IsString()
-  @Length(0, 100)
+  @Length(0, MENU_LAYOUT_MAX_LENGTH)
+  @IsOptional()
   layout?: string;
 
-  @IsOptional()
   @IsEnum(MenuModule)
+  @IsOptional()
   module?: MenuModule;
 }

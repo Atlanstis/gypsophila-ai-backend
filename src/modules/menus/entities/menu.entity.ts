@@ -10,6 +10,13 @@ import {
 } from 'typeorm';
 import { Permission } from './permission.entity';
 import { RoleMenu } from './role-menu.entity';
+import {
+  MENU_ICON_MAX_LENGTH,
+  MENU_KEY_MAX_LENGTH,
+  MENU_LAYOUT_MAX_LENGTH,
+  MENU_NAME_MAX_LENGTH,
+  MENU_PATH_MAX_LENGTH,
+} from '../constants';
 
 /**
  * 菜单类型
@@ -31,13 +38,13 @@ export enum MenuModule {
  */
 @Entity('menus')
 export class Menu {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({ length: 100, nullable: false, unique: true })
+  @Column({ length: MENU_KEY_MAX_LENGTH, nullable: false, unique: true })
   key: string;
 
-  @Column({ length: 100, nullable: false })
+  @Column({ length: MENU_NAME_MAX_LENGTH, nullable: false })
   name: string;
 
   @Column({
@@ -53,10 +60,10 @@ export class Menu {
   @Column({ name: 'order_num', default: 0 })
   orderNum: number;
 
-  @Column({ length: 255, nullable: false })
+  @Column({ length: MENU_PATH_MAX_LENGTH, nullable: false })
   path: string;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ length: MENU_ICON_MAX_LENGTH, nullable: true })
   icon: string;
 
   @Column({ name: 'is_visible', default: true })
@@ -65,7 +72,7 @@ export class Menu {
   @Column({ name: 'is_cached', default: false })
   isCached: boolean;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ length: MENU_LAYOUT_MAX_LENGTH, nullable: true })
   layout: string;
 
   @Column({

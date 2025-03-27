@@ -14,7 +14,7 @@ import { Permission } from '../../menus/entities/permission.entity';
  */
 @Entity('role_permissions')
 export class RolePermission {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ name: 'role_id', nullable: false })

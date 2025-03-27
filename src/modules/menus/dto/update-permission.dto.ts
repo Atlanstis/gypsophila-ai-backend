@@ -10,11 +10,11 @@ export class UpdatePermissionDto {
 
   @IsOptional()
   @IsString()
-  @Length(2, 100)
+  @Length(2, 32)
   key?: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 100)
+  @Length(2, 16)
   name?: string;
 }

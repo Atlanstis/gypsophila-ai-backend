@@ -21,7 +21,7 @@ export enum AuthType {
  */
 @Entity('user_auths')
 export class UserAuth {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ name: 'user_id', nullable: false })

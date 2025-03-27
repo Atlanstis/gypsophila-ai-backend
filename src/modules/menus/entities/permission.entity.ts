@@ -16,16 +16,16 @@ import { RolePermission } from '../../roles/entities/role-permission.entity';
  */
 @Entity('permissions')
 export class Permission {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ name: 'menu_id', nullable: false })
   menuId: number;
 
-  @Column({ length: 100, nullable: false, unique: true })
+  @Column({ length: 32, nullable: false, unique: true })
   key: string;
 
-  @Column({ length: 100, nullable: false })
+  @Column({ length: 16, nullable: false })
   name: string;
 
   @CreateDateColumn({ name: 'created_at' })

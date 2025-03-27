@@ -5,32 +5,41 @@ import {
   IsString,
   Length,
 } from 'class-validator';
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  USER_AVATAR_MAX_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USER_NAME_MAX_LENGTH,
+  USER_NAME_MIN_LENGTH,
+} from '../constants';
 
 /**
  * 创建用户DTO
  */
 export class CreateUserDto {
-  @IsOptional()
   @IsString()
-  @Length(0, 255)
+  @Length(0, USER_AVATAR_MAX_LENGTH)
+  @IsOptional()
   avatar?: string;
 
-  @IsNotEmpty()
   @IsString()
-  @Length(2, 50)
+  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH)
+  @IsNotEmpty()
   username: string;
 
-  @IsNotEmpty()
   @IsString()
-  @Length(2, 100)
+  @Length(USER_NAME_MIN_LENGTH, USER_NAME_MAX_LENGTH)
+  @IsNotEmpty()
   name: string;
 
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   isBuiltin?: boolean;
 
-  @IsNotEmpty()
   @IsString()
-  @Length(6, 100)
+  @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
+  @IsNotEmpty()
   password: string;
 }

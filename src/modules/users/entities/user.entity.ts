@@ -8,6 +8,11 @@ import {
 } from 'typeorm';
 import { UserAuth } from './user-auth.entity';
 import { UserRole } from '../../roles/entities/user-role.entity';
+import {
+  USER_AVATAR_MAX_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USER_NAME_MAX_LENGTH,
+} from '../constants';
 
 /**
  * 用户实体
@@ -17,13 +22,13 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ length: USER_AVATAR_MAX_LENGTH, nullable: true })
   avatar: string;
 
-  @Column({ length: 50, nullable: false, unique: true })
+  @Column({ length: USERNAME_MAX_LENGTH, nullable: false, unique: true })
   username: string;
 
-  @Column({ length: 100, nullable: false })
+  @Column({ length: USER_NAME_MAX_LENGTH, nullable: false })
   name: string;
 
   @Column({ name: 'is_builtin', default: false })
