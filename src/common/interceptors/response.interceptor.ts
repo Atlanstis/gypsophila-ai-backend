@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Response } from '../interfaces/response.interface';
+import { IResponse } from '../interfaces/response.interface';
 import { RESPONSE_MESSAGE_METADATA_KEY } from '../decorators/response-message.decorator';
 import { ResponseHelper } from '../helpers/response.helper';
 import { Request } from 'express';
@@ -17,13 +17,15 @@ import { Request } from 'express';
  * 统一处理成功响应的格式
  */
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
+export class ResponseInterceptor<T>
+  implements NestInterceptor<T, IResponse<T>>
+{
   constructor(private reflector: Reflector) {}
 
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<Response<T>> {
+  ): Observable<IResponse<T>> {
     const request = context.switchToHttp().getRequest<Request>();
 
     // 从处理程序中获取自定义响应消息（如果存在）
@@ -68,7 +70,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   /**
    * 检查数据是否已经是标准响应格式
    */
-  private isStandardResponse(data: any): data is Response<any> {
+  private isStandardResponse(data: any): data is IResponse<any> {
     return (
       data &&
       typeof data === 'object' &&

@@ -2,7 +2,7 @@
  * 通用响应接口
  * 定义API响应的标准格式
  */
-export interface Response<T = any> {
+export interface IResponse<T = any> {
   /**
    * 响应状态码
    * 格式：XXXYYY，其中：

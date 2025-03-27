@@ -1,5 +1,5 @@
 import { StatusCode } from '../enums/status-code.enum';
-import { Response } from '../interfaces/response.interface';
+import { IResponse } from '../interfaces/response.interface';
 import { Request } from 'express';
 
 /**
@@ -18,7 +18,7 @@ export class ResponseHelper {
     data: T,
     message: string = '操作成功',
     request?: Request,
-  ): Response<T> {
+  ): IResponse<T> {
     return {
       code: StatusCode.SUCCESS,
       message,
@@ -41,7 +41,7 @@ export class ResponseHelper {
     message: string,
     request?: Request,
     error?: any,
-  ): Response {
+  ): IResponse {
     return {
       code: errorCode,
       message,
