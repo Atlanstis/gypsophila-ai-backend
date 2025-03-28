@@ -24,13 +24,15 @@ export class CreateUserDto {
   @IsOptional()
   avatar?: string;
 
-  @IsString()
-  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH)
-  @IsNotEmpty()
+  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, {
+    message: `username 长度应在 ${USERNAME_MIN_LENGTH} 到 ${USERNAME_MAX_LENGTH} 之间`,
+  })
+  @IsString({ message: 'username 必须是字符串' })
+  @IsNotEmpty({ message: 'username 不能为空' })
   username: string;
 
-  @IsString()
   @Length(USER_NAME_MIN_LENGTH, USER_NAME_MAX_LENGTH)
+  @IsString()
   @IsNotEmpty()
   name: string;
 

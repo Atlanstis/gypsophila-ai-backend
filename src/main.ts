@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from './config/config.service';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import * as compression from 'compression';
 import { LoggerService } from './logger/logger.service';
+import { ValidationPipeFactory } from './common/pipes/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,13 +14,7 @@ async function bootstrap() {
   const logger = app.get(LoggerService);
 
   // 启用全局验证管道
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  app.useGlobalPipes(ValidationPipeFactory.create());
 
   // 获取配置服务
   const configService = app.get(ConfigService);
