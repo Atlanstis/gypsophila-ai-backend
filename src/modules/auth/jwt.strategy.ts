@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '../../config/config.service';
 import { AuthService, JwtPayload } from './auth.service';
-import { UsersService } from '../../modules/users/users.service';
+import { UsersService } from '../users/users.service';
 
 /**
  * JWT认证策略
@@ -46,7 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         isBuiltin: user.isBuiltin,
         roles,
       };
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('认证失败');
     }
   }

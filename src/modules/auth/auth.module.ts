@@ -6,11 +6,11 @@ import { ConfigService } from '../../config/config.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
-import { UsersModule } from '../../modules/users/users.module';
+import { UsersModule } from '../users/users.module';
 
 /**
  * 认证模块
- * 提供用户认证相关的功能
+ * 提供用户认证和数据加密相关的功能
  */
 @Module({
   imports: [

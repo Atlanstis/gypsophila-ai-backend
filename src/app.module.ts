@@ -13,6 +13,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { MenusModule } from './modules/menus/menus.module';
 import { HttpStatusInterceptor } from './common/interceptors/http-status.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
     UsersModule,
     RolesModule,
     MenusModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
