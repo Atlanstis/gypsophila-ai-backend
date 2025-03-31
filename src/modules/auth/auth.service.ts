@@ -3,14 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { StatusCode } from '../../common/enums/status-code.enum';
 import { AuthException } from '../../common/exceptions/auth.exception';
 import { ConfigService } from '../../config/config.service';
-import {
-  generateKeyPairSync,
-  privateDecrypt,
-  publicEncrypt,
-  constants,
-} from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
+import { RsaService } from './rsa.service';
 
 /**
  * Token对类型定义
@@ -35,111 +28,17 @@ export interface JwtPayload {
  */
 @Injectable()
 export class AuthService {
-  private readonly keyPairPath = path.join(process.cwd(), 'keys');
-  private readonly publicKeyPath = path.join(this.keyPairPath, 'public.key');
-  private readonly privateKeyPath = path.join(this.keyPairPath, 'private.key');
-
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {
-    this.ensureKeyPairExists();
-  }
-
-  /**
-   * 确保密钥对存在，如不存在则生成
-   */
-  private ensureKeyPairExists(): void {
-    if (!fs.existsSync(this.keyPairPath)) {
-      fs.mkdirSync(this.keyPairPath, { recursive: true });
-    }
-
-    if (
-      !fs.existsSync(this.publicKeyPath) ||
-      !fs.existsSync(this.privateKeyPath)
-    ) {
-      this.generateKeyPair();
-    }
-  }
-
-  /**
-   * 生成RSA密钥对
-   */
-  private generateKeyPair(): void {
-    const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-      modulusLength: 2048,
-      publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem',
-      },
-      privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem',
-      },
-    });
-
-    fs.writeFileSync(this.publicKeyPath, publicKey);
-    fs.writeFileSync(this.privateKeyPath, privateKey);
-  }
+    private readonly rsaService: RsaService,
+  ) {}
 
   /**
    * 获取公钥
    */
-  getPublicKey(): string {
-    return fs.readFileSync(this.publicKeyPath, 'utf8');
-  }
-
-  /**
-   * 获取私钥
-   */
-  private getPrivateKey(): string {
-    return fs.readFileSync(this.privateKeyPath, 'utf8');
-  }
-
-  /**
-   * 使用私钥解密数据
-   * @param encryptedData 加密后的数据（Base64编码）
-   */
-  decryptData(encryptedData: string): string {
-    try {
-      const privateKey = this.getPrivateKey();
-      const buffer = Buffer.from(encryptedData, 'base64');
-
-      const decrypted = privateDecrypt(
-        {
-          key: privateKey,
-          padding: constants.RSA_PKCS1_OAEP_PADDING,
-          oaepHash: 'sha256',
-        },
-        buffer,
-      );
-
-      return decrypted.toString('utf8');
-    } catch (error) {
-      console.error('解密失败:', error.message);
-      throw new Error(`解密失败: ${error.message}`);
-    }
-  }
-
-  /**
-   * 测试加密方法
-   * @param data 需要加密的数据
-   * @returns 加密后的数据（Base64编码）
-   */
-  testEncrypt(data: string): string {
-    const publicKey = this.getPublicKey();
-    const buffer = Buffer.from(data);
-
-    const encrypted = publicEncrypt(
-      {
-        key: publicKey,
-        padding: constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256',
-      },
-      buffer,
-    );
-
-    return encrypted.toString('base64');
+  async getPublicKey(): Promise<string> {
+    return this.rsaService.getPublicKey();
   }
 
   /**

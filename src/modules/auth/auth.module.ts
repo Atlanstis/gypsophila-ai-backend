@@ -3,10 +3,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
+import { RedisService } from '../../redis/redis.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
+import { RsaService } from './rsa.service';
 
 /**
  * 认证模块
@@ -25,10 +27,23 @@ import { UsersModule } from '../users/users.module';
         },
       }),
     }),
-    UsersModule, // 导入用户模块
+    UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  providers: [
+    {
+      provide: RsaService,
+      useFactory: (
+        redisService: RedisService,
+        configService: ConfigService,
+      ) => {
+        return new RsaService(configService, redisService);
+      },
+      inject: [RedisService, ConfigService],
+    },
+    JwtStrategy,
+    AuthService,
+  ],
+  exports: [AuthService, RsaService],
 })
 export class AuthModule {}

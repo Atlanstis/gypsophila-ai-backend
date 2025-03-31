@@ -8,8 +8,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UsersService } from '../users/users.service';
 import * as argon2 from 'argon2';
 import { CurrentUser } from '../../common/decorators/user.decorator';
-import { EncryptedDataDto } from './dto/encrypted-data.dto';
-import { DecryptData } from './decorators/decrypt-data.decorator';
+import { DecryptField } from '../../common/pipes/decrypt-field.pipe';
 
 /**
  * 认证控制器
@@ -27,8 +26,8 @@ export class AuthController {
    * 用于客户端对敏感数据进行加密
    */
   @Get('public-key')
-  getPublicKey(): { publicKey: string } {
-    const publicKey = this.authService.getPublicKey();
+  async getPublicKey(): Promise<{ publicKey: string }> {
+    const publicKey = await this.authService.getPublicKey();
     return { publicKey };
   }
 
@@ -36,7 +35,7 @@ export class AuthController {
    * 用户登录
    */
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body(DecryptField('password')) loginDto: LoginDto) {
     try {
       // 通过用户名查找用户
       const users = await this.usersService.findAll({
@@ -67,8 +66,8 @@ export class AuthController {
 
       // 验证密码
       const isPasswordValid = await argon2.verify(
-        loginDto.password,
         passwordAuth.authData,
+        loginDto.password,
       );
 
       if (!isPasswordValid) {
@@ -92,37 +91,6 @@ export class AuthController {
   }
 
   /**
-   * 使用加密数据登录
-   * 接收加密的用户名和密码
-   */
-  @Post('secure-login')
-  async secureLogin(
-    @Body() encryptedDataDto: EncryptedDataDto,
-    @DecryptData() decryptedData: any,
-  ) {
-    try {
-      // 从解密数据中提取用户名和密码
-      const { username, password } = decryptedData;
-
-      // 构造普通登录DTO
-      const loginDto = new LoginDto();
-      loginDto.username = username;
-      loginDto.password = password;
-
-      // 调用普通登录逻辑
-      return await this.login(loginDto);
-    } catch (error) {
-      if (error instanceof BusinessException) {
-        throw error;
-      }
-      throw new BusinessException(
-        '登录失败，请确保数据已正确加密',
-        StatusCode.PASSWORD_ERROR,
-      );
-    }
-  }
-
-  /**
    * 刷新访问令牌
    */
   @Post('refresh')
@@ -138,49 +106,5 @@ export class AuthController {
   async getUserInfo(@CurrentUser() user: any): Promise<any> {
     // 返回JWT策略中提取的用户信息
     return user;
-  }
-
-  /**
-   * 解密数据（仅用于测试）
-   */
-  @Post('decrypt')
-  decryptData(@Body() encryptedDataDto: EncryptedDataDto): {
-    decryptedData: string;
-  } {
-    const decryptedData = this.authService.decryptData(
-      encryptedDataDto.encryptedData,
-    );
-    return { decryptedData };
-  }
-
-  /**
-   * 测试加密解密功能
-   * 用于验证加密和解密正常工作
-   */
-  @Post('test-encryption')
-  testEncryption(@Body() encryptedDataDto: EncryptedDataDto): {
-    success: boolean;
-    original: string;
-    decrypted: any;
-  } {
-    try {
-      // 解密数据
-      const decryptedString = this.authService.decryptData(
-        encryptedDataDto.encryptedData,
-      );
-      const decryptedData = JSON.parse(decryptedString);
-
-      return {
-        success: true,
-        original: encryptedDataDto.encryptedData,
-        decrypted: decryptedData,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        original: encryptedDataDto.encryptedData,
-        decrypted: error.message || '解密失败',
-      };
-    }
   }
 }
