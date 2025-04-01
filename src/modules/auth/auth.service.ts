@@ -1,8 +1,8 @@
+import { AuthException, StatusCode } from 'src/common';
+
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { StatusCode } from '../../common/enums/status-code.enum';
-import { AuthException } from '../../common/exceptions/auth.exception';
 import { ConfigService } from '../../config/config.service';
 import { RsaService } from './rsa.service';
 

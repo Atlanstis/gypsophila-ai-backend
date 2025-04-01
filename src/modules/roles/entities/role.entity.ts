@@ -1,6 +1,6 @@
+import { TimeEntity } from 'src/common';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { TimeEntity } from '../../../common/entities/time.entity';
 import { RoleMenu } from '../../menus/entities/role-menu.entity';
 import {
   ROLE_DESCRIPTION_MAX_LENGTH,

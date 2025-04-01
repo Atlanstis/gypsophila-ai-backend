@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { ValidationMessageHelper as VMH } from 'src/common/helpers/validation-message.helper';
+import { ValidationMessageHelper as VMH } from 'src/common';
 
 export class LoginDto {
   /**

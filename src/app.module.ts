@@ -3,9 +3,11 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { HttpStatusInterceptor } from './common/interceptors/http-status.interceptor';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import {
+  HttpExceptionFilter,
+  HttpStatusInterceptor,
+  ResponseInterceptor,
+} from './common';
 import { ConfigModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { LoggerModule } from './logger/logger.module';

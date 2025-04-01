@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
-import { ValidationPipeFactory } from './common/pipes/validation.pipe';
+import { ValidationPipeFactory } from './common';
 import { ConfigService } from './config/config.service';
 import { LoggerService } from './logger/logger.service';
 

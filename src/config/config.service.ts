@@ -1,11 +1,10 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { BusinessException, StatusCode } from 'src/common';
 import { parse } from 'yaml';
 
 import { Injectable, Logger as NestLogger } from '@nestjs/common';
 
-import { StatusCode } from '../common/enums/status-code.enum';
-import { BusinessException } from '../common/exceptions/business.exception';
 import { configSchema } from './config.schema';
 
 /**

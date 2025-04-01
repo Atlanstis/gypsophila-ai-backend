@@ -1,3 +1,4 @@
+import { TimeEntity } from 'src/common';
 import {
   Column,
   Entity,
@@ -7,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { TimeEntity } from '../../../common/entities/time.entity';
 import {
   MENU_ICON_MAX_LENGTH,
   MENU_KEY_MAX_LENGTH,

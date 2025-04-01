@@ -6,7 +6,7 @@ import {
 } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { BusinessException } from 'src/common/exceptions/business.exception';
+import { BusinessException } from 'src/common';
 import { ConfigService } from 'src/config/config.service';
 import { RedisService } from 'src/redis/redis.service';
 
