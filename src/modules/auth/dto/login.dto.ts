@@ -1,20 +1,18 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+import { ValidationMessageHelper as VMH } from 'src/common/helpers/validation-message.helper';
 
-/**
- * 登录请求DTO
- */
 export class LoginDto {
   /**
    * 用户名
    */
-  @IsString({ message: '用户名必须是字符串' })
-  @IsNotEmpty({ message: '用户名不能为空' })
+  @IsString({ message: VMH.string.isString('username') })
+  @IsNotEmpty({ message: VMH.common.isNotEmpty('username') })
   username: string;
 
   /**
    * 密码
    */
-  @IsString({ message: '密码必须是字符串' })
-  @IsNotEmpty({ message: '密码不能为空' })
+  @IsString({ message: VMH.string.isString('username') })
+  @IsNotEmpty({ message: VMH.common.isNotEmpty('username') })
   password: string;
 }
