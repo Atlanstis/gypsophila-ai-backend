@@ -1,10 +1,16 @@
+import * as argon2 from 'argon2';
+import { Repository } from 'typeorm';
+
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 
-import { AuthException, StatusCode } from 'src/common';
+import { AuthException, BusinessException, StatusCode } from 'src/common';
 
 import { ConfigService } from '../../config/config.service';
-import { RsaService } from './rsa.service';
+import { AuthType, UserAuth } from '../users/entities/user-auth.entity';
+import { User } from '../users/entities/user.entity';
+import { LoginDto } from './dto/login.dto';
 
 /**
  * Token对类型定义
@@ -32,14 +38,51 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly rsaService: RsaService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(UserAuth)
+    private readonly userAuthRepository: Repository<UserAuth>,
   ) {}
 
   /**
-   * 获取公钥
+   * 用户登录
    */
-  async getPublicKey(): Promise<string> {
-    return this.rsaService.getPublicKey();
+  async login(loginDto: LoginDto): Promise<TokenPair> {
+    // 通过用户名查找用户
+    const user = await this.userRepository.findOne({
+      where: { username: loginDto.username },
+    });
+
+    const error = new BusinessException(
+      '用户名或密码错误',
+      StatusCode.PASSWORD_ERROR,
+    );
+
+    if (!user) {
+      throw error;
+    }
+
+    // 查找用户的密码认证
+    const passwordAuth = await this.userAuthRepository.findOne({
+      where: { userId: user.id, authType: AuthType.PASSWORD },
+    });
+
+    if (!passwordAuth) {
+      throw error;
+    }
+
+    // 验证密码
+    const isPasswordValid = await argon2.verify(
+      passwordAuth.authData,
+      loginDto.password,
+    );
+
+    if (!isPasswordValid) {
+      throw error;
+    }
+
+    // 登录成功，生成令牌对
+    return this.generateTokens(user.id, user.username);
   }
 
   /**
