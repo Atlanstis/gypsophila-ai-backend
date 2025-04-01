@@ -1,4 +1,3 @@
-import { TimeEntity } from 'src/common';
 import {
   Column,
   Entity,
@@ -6,6 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { TimeEntity } from 'src/common';
 
 import { User } from './user.entity';
 

@@ -1,13 +1,14 @@
 import * as argon2 from 'argon2';
+
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
 import {
   BusinessException,
   CurrentUser,
   DecryptField,
   StatusCode,
 } from 'src/common';
-
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';

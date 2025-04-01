@@ -1,4 +1,3 @@
-import { TimeEntity } from 'src/common';
 import {
   Column,
   Entity,
@@ -7,6 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { TimeEntity } from 'src/common';
 
 import { RolePermission } from '../../roles/entities/role-permission.entity';
 import { Menu } from './menu.entity';

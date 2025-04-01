@@ -1,5 +1,6 @@
-import { TimeEntity } from 'src/common';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { TimeEntity } from 'src/common';
 
 import { UserRole } from '../../roles/entities/user-role.entity';
 import {

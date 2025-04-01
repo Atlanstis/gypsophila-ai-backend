@@ -6,11 +6,12 @@ import {
 } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import { Injectable, OnModuleInit } from '@nestjs/common';
+
 import { BusinessException } from 'src/common';
 import { ConfigService } from 'src/config/config.service';
 import { RedisService } from 'src/redis/redis.service';
-
-import { Injectable, OnModuleInit } from '@nestjs/common';
 
 import { REDIS_PRIVATE_KEY, REDIS_PUBLIC_KEY } from './rsa-redis-key';
 
