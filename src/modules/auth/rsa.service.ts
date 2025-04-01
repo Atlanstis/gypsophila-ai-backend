@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '../../config/config.service';
-import { RedisService } from '../../redis/redis.service';
+import { ConfigService } from 'src/config/config.service';
+import { RedisService } from 'src/redis/redis.service';
 import {
   generateKeyPairSync,
   privateDecrypt,
@@ -82,17 +82,25 @@ export class RsaService implements OnModuleInit {
 
   /**
    * 将密钥对保存到Redis
+   * @param publicKey 公钥(可选)
+   * @param privateKey 私钥(可选)
    */
   private async saveKeysToRedis(
-    publicKey: string,
-    privateKey: string,
+    publicKey?: string,
+    privateKey?: string,
   ): Promise<void> {
-    await this.redisService.set(REDIS_PUBLIC_KEY, publicKey);
-    await this.redisService.set(REDIS_PRIVATE_KEY, privateKey);
+    if (publicKey) {
+      await this.redisService.set(REDIS_PUBLIC_KEY, publicKey);
+    }
+    if (privateKey) {
+      await this.redisService.set(REDIS_PRIVATE_KEY, privateKey);
+    }
   }
 
   /**
    * 将密钥对保存到文件
+   * @param publicKey 公钥
+   * @param privateKey 私钥
    */
   private async saveKeysToFile(
     publicKey: string,
@@ -104,6 +112,7 @@ export class RsaService implements OnModuleInit {
 
   /**
    * 生成RSA密钥对
+   * @returns 公钥和私钥
    */
   private generateKeyPair(): { publicKey: string; privateKey: string } {
     const { publicKey, privateKey } = generateKeyPairSync('rsa', {
@@ -132,7 +141,9 @@ export class RsaService implements OnModuleInit {
     }
 
     // Redis中不存在则从文件获取
-    return fs.readFileSync(this.publicKeyPath, 'utf8');
+    const publicKey = fs.readFileSync(this.publicKeyPath, 'utf8');
+    await this.saveKeysToRedis(publicKey);
+    return publicKey;
   }
 
   /**
@@ -146,7 +157,10 @@ export class RsaService implements OnModuleInit {
     }
 
     // Redis中不存在则从文件获取
-    return fs.readFileSync(this.privateKeyPath, 'utf8');
+
+    const privateKey = fs.readFileSync(this.privateKeyPath, 'utf8');
+    await this.saveKeysToRedis(undefined, privateKey);
+    return privateKey;
   }
 
   /**
