@@ -1,11 +1,13 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigService } from './config/config.service';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import * as compression from 'compression';
-import { LoggerService } from './logger/logger.service';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+
+import { NestFactory } from '@nestjs/core';
+
+import { AppModule } from './app.module';
 import { ValidationPipeFactory } from './common/pipes/validation.pipe';
+import { ConfigService } from './config/config.service';
+import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

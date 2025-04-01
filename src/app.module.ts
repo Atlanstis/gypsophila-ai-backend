@@ -1,19 +1,20 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { ConfigModule } from './config/config.module';
-import { LoggerModule } from './logger/logger.module';
-import { DatabaseModule } from './database/database.module';
-import { RedisModule } from './redis/redis.module';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
-import { UsersModule } from './modules/users/users.module';
-import { RolesModule } from './modules/roles/roles.module';
-import { MenusModule } from './modules/menus/menus.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { HttpStatusInterceptor } from './common/interceptors/http-status.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { ConfigModule } from './config/config.module';
+import { DatabaseModule } from './database/database.module';
+import { LoggerModule } from './logger/logger.module';
+import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { MenusModule } from './modules/menus/menus.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { UsersModule } from './modules/users/users.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [

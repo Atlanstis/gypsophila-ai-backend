@@ -6,9 +6,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Menu } from './menu.entity';
-import { RolePermission } from '../../roles/entities/role-permission.entity';
+
 import { TimeEntity } from '../../../common/entities/time.entity';
+import { RolePermission } from '../../roles/entities/role-permission.entity';
+import { Menu } from './menu.entity';
 
 /**
  * 权限实体

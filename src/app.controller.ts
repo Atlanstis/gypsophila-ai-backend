@@ -1,11 +1,13 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
-import { CurrentUser } from './common/decorators/user.decorator';
-import { ResponseMessage } from './common/decorators/response-message.decorator';
-import { RedisService } from './redis/redis.service';
-import { ConfigService } from './config/config.service';
 import { DataSource } from 'typeorm';
+
+import { Controller, Get, UseGuards } from '@nestjs/common';
+
+import { AppService } from './app.service';
+import { ResponseMessage } from './common/decorators/response-message.decorator';
+import { CurrentUser } from './common/decorators/user.decorator';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { ConfigService } from './config/config.service';
+import { RedisService } from './redis/redis.service';
 
 @Controller()
 export class AppController {

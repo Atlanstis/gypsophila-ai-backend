@@ -1,5 +1,6 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+
 import { MenuModule, MenuType } from '../entities/menu.entity';
 
 /**

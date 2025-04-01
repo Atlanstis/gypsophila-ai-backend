@@ -1,18 +1,20 @@
+import { Repository } from 'typeorm';
+
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+
+import { TransactionService } from '../../database/transaction.service';
+import { CreateMenuDto } from './dto/create-menu.dto';
+import { CreatePermissionDto } from './dto/create-permission.dto';
+import { QueryMenuDto } from './dto/query-menu.dto';
+import { UpdateMenuDto } from './dto/update-menu.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Menu } from './entities/menu.entity';
 import { Permission } from './entities/permission.entity';
-import { CreateMenuDto } from './dto/create-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
-import { QueryMenuDto } from './dto/query-menu.dto';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { TransactionService } from '../../database/transaction.service';
 
 /**
  * 菜单服务

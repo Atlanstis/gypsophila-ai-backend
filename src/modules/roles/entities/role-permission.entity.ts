@@ -5,9 +5,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from './role.entity';
-import { Permission } from '../../menus/entities/permission.entity';
+
 import { TimeEntity } from '../../../common/entities/time.entity';
+import { Permission } from '../../menus/entities/permission.entity';
+import { Role } from './role.entity';
 
 /**
  * 角色权限关联实体

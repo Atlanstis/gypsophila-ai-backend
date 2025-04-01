@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RolesService } from './roles.service';
-import { RolesController } from './roles.controller';
+
+import { DatabaseModule } from '../../database/database.module';
+import { RolePermission } from './entities/role-permission.entity';
 import { Role } from './entities/role.entity';
 import { UserRole } from './entities/user-role.entity';
-import { RolePermission } from './entities/role-permission.entity';
-import { DatabaseModule } from '../../database/database.module';
+import { RolesController } from './roles.controller';
+import { RolesService } from './roles.service';
+
 /**
  * 角色模块
  */

@@ -1,6 +1,7 @@
+import { Request } from 'express';
+
 import { StatusCode } from '../enums/status-code.enum';
 import { IResponse } from '../interfaces/response.interface';
-import { Request } from 'express';
 
 /**
  * 响应帮助工具类

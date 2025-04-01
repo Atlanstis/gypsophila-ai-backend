@@ -1,7 +1,9 @@
+import Redis from 'ioredis';
+
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+
 import { ConfigService } from '../config/config.service';
 import { LoggerService } from '../logger/logger.service';
-import Redis from 'ioredis';
 
 /**
  * Redis服务

@@ -1,14 +1,16 @@
+import * as argon2 from 'argon2';
+
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { BusinessException } from '../../common/exceptions/business.exception';
+
+import { CurrentUser } from '../../common/decorators/user.decorator';
 import { StatusCode } from '../../common/enums/status-code.enum';
+import { BusinessException } from '../../common/exceptions/business.exception';
+import { DecryptField } from '../../common/pipes/decrypt-field.pipe';
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { UsersService } from '../users/users.service';
-import * as argon2 from 'argon2';
-import { CurrentUser } from '../../common/decorators/user.decorator';
-import { DecryptField } from '../../common/pipes/decrypt-field.pipe';
 
 /**
  * 认证控制器

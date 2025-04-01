@@ -1,19 +1,20 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
 } from '@nestjs/common';
-import { MenusService } from './menus.service';
+
 import { CreateMenuDto } from './dto/create-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
-import { QueryMenuDto } from './dto/query-menu.dto';
 import { CreatePermissionDto } from './dto/create-permission.dto';
+import { QueryMenuDto } from './dto/query-menu.dto';
+import { UpdateMenuDto } from './dto/update-menu.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { MenusService } from './menus.service';
 
 /**
  * 菜单控制器

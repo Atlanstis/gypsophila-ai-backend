@@ -1,6 +1,7 @@
-import { Module, Global } from '@nestjs/common';
-import { RedisService } from './redis.service';
+import { Global, Module } from '@nestjs/common';
+
 import { LoggerModule } from '../logger/logger.module';
+import { RedisService } from './redis.service';
 
 /**
  * Redis模块

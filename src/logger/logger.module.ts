@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
+
+import { Module } from '@nestjs/common';
+
+import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '../config/config.service';
 import { createLoggerConfig } from './logger.config';
 import { LoggerService } from './logger.service';
-import { ConfigService } from '../config/config.service';
-import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [

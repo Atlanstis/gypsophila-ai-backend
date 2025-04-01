@@ -5,9 +5,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { TimeEntity } from '../../../common/entities/time.entity';
 import { User } from '../../users/entities/user.entity';
 import { Role } from './role.entity';
-import { TimeEntity } from '../../../common/entities/time.entity';
 
 /**
  * 用户角色关联实体

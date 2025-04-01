@@ -1,7 +1,7 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
-import { join } from 'path';
-import { parse } from 'yaml';
 import { readFileSync } from 'fs';
+import { join } from 'path';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { parse } from 'yaml';
 
 /**
  * 获取配置文件路径

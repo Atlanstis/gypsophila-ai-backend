@@ -6,8 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Permission } from './permission.entity';
-import { RoleMenu } from './role-menu.entity';
+
+import { TimeEntity } from '../../../common/entities/time.entity';
 import {
   MENU_ICON_MAX_LENGTH,
   MENU_KEY_MAX_LENGTH,
@@ -15,7 +15,8 @@ import {
   MENU_NAME_MAX_LENGTH,
   MENU_PATH_MAX_LENGTH,
 } from '../constants';
-import { TimeEntity } from '../../../common/entities/time.entity';
+import { Permission } from './permission.entity';
+import { RoleMenu } from './role-menu.entity';
 
 /**
  * 菜单类型

@@ -5,8 +5,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+
 import { TimeEntity } from '../../../common/entities/time.entity';
+import { User } from './user.entity';
 
 /**
  * 用户认证方式

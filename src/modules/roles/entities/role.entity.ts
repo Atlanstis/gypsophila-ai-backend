@@ -1,12 +1,13 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserRole } from './user-role.entity';
+
+import { TimeEntity } from '../../../common/entities/time.entity';
 import { RoleMenu } from '../../menus/entities/role-menu.entity';
-import { RolePermission } from './role-permission.entity';
 import {
   ROLE_DESCRIPTION_MAX_LENGTH,
   ROLE_NAME_MAX_LENGTH,
 } from '../constants';
-import { TimeEntity } from '../../../common/entities/time.entity';
+import { RolePermission } from './role-permission.entity';
+import { UserRole } from './user-role.entity';
 
 /**
  * 角色实体

@@ -1,12 +1,13 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserAuth } from './user-auth.entity';
+
+import { TimeEntity } from '../../../common/entities/time.entity';
 import { UserRole } from '../../roles/entities/user-role.entity';
 import {
-  USER_AVATAR_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
+  USER_AVATAR_MAX_LENGTH,
   USER_NAME_MAX_LENGTH,
 } from '../constants';
-import { TimeEntity } from '../../../common/entities/time.entity';
+import { UserAuth } from './user-auth.entity';
 
 /**
  * 用户实体

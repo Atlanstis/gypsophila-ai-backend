@@ -1,4 +1,5 @@
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+
 import {
   ROLE_DESCRIPTION_MAX_LENGTH,
   ROLE_NAME_MAX_LENGTH,

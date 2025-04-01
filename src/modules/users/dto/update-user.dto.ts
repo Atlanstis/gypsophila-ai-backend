@@ -1,8 +1,9 @@
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+
 import {
-  USER_AVATAR_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
+  USER_AVATAR_MAX_LENGTH,
   USER_NAME_MAX_LENGTH,
   USER_NAME_MIN_LENGTH,
 } from '../constants';

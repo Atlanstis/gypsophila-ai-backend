@@ -1,15 +1,17 @@
+import { Repository } from 'typeorm';
+
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Role } from './entities/role.entity';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { QueryRoleDto } from './dto/query-role.dto';
+
 import { TransactionService } from '../../database/transaction.service';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { QueryRoleDto } from './dto/query-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { Role } from './entities/role.entity';
 
 /**
  * 角色服务

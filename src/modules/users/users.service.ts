@@ -1,18 +1,20 @@
+import * as argon2 from 'argon2';
+import { Repository } from 'typeorm';
+
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as argon2 from 'argon2';
-import { User } from './entities/user.entity';
-import { UserAuth } from './entities/user-auth.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { QueryUserDto } from './dto/query-user.dto';
-import { AuthType } from './entities/user-auth.entity';
+
 import { TransactionService } from '../../database/transaction.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { QueryUserDto } from './dto/query-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserAuth } from './entities/user-auth.entity';
+import { AuthType } from './entities/user-auth.entity';
+import { User } from './entities/user.entity';
 
 /**
  * 用户服务

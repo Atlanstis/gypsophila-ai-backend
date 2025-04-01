@@ -1,8 +1,9 @@
-import * as winston from 'winston';
 import * as fs from 'fs';
 import { type WinstonModuleOptions } from 'nest-winston';
-import { ConfigService } from '../config/config.service';
+import * as winston from 'winston';
 import 'winston-daily-rotate-file';
+
+import { ConfigService } from '../config/config.service';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 

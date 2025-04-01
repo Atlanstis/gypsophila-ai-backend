@@ -7,7 +7,7 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { MenuModule, MenuType } from '../entities/menu.entity';
+
 import {
   MENU_ICON_MAX_LENGTH,
   MENU_KEY_MAX_LENGTH,
@@ -18,6 +18,7 @@ import {
   MENU_PATH_MAX_LENGTH,
   MENU_PATH_MIN_LENGTH,
 } from '../constants';
+import { MenuModule, MenuType } from '../entities/menu.entity';
 
 /**
  * 创建菜单DTO
