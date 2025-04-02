@@ -1,6 +1,11 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
-import { CurrentUser, DecryptField, JwtAuthGuard } from 'src/common';
+import {
+  CurrentUser,
+  DecryptField,
+  ICurrentUser,
+  JwtAuthGuard,
+} from 'src/common';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -49,7 +54,7 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('info')
-  async getUserInfo(@CurrentUser() user: any): Promise<any> {
+  async getUserInfo(@CurrentUser() user: ICurrentUser): Promise<any> {
     // 返回JWT验证中提取的用户信息
     return user;
   }
