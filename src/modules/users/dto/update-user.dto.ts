@@ -1,12 +1,12 @@
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 
 import {
+  NICKNAME_MAX_LENGTH,
+  NICKNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   USER_AVATAR_MAX_LENGTH,
-  USER_NAME_MAX_LENGTH,
-  USER_NAME_MIN_LENGTH,
-} from '../constants';
+} from '../users.constants';
 
 /**
  * 更新用户DTO
@@ -23,9 +23,9 @@ export class UpdateUserDto {
   username?: string;
 
   @IsString()
-  @Length(USER_NAME_MIN_LENGTH, USER_NAME_MAX_LENGTH)
+  @Length(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH)
   @IsOptional()
-  name?: string;
+  nickname?: string;
 
   @IsBoolean()
   @IsOptional()

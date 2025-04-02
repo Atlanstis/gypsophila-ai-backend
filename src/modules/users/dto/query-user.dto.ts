@@ -11,7 +11,7 @@ export class QueryUserDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  nickname?: string;
 
   @IsOptional()
   @Type(() => Boolean)

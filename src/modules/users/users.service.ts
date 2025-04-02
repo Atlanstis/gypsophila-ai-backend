@@ -46,7 +46,7 @@ export class UsersService {
       // 创建用户
       const user = manager.create(User, {
         username: createUserDto.username,
-        name: createUserDto.name,
+        nickname: createUserDto.nickname,
         avatar: createUserDto.avatar,
         isBuiltin: createUserDto.isBuiltin || false,
       });
@@ -80,7 +80,7 @@ export class UsersService {
   async findAll(
     query: QueryUserDto,
   ): Promise<{ total: number; items: User[] }> {
-    const { username, name, isBuiltin, pageSize = 10, current = 1 } = query;
+    const { username, nickname, isBuiltin, pageSize = 10, current = 1 } = query;
 
     // 构建查询条件
     const queryBuilder = this.userRepository.createQueryBuilder('user');
@@ -92,8 +92,10 @@ export class UsersService {
       });
     }
 
-    if (name) {
-      queryBuilder.andWhere('user.name LIKE :name', { name: `%${name}%` });
+    if (nickname) {
+      queryBuilder.andWhere('user.nickname LIKE :nickname', {
+        nickname: `%${nickname}%`,
+      });
     }
 
     if (isBuiltin !== undefined) {
@@ -151,7 +153,7 @@ export class UsersService {
     return this.transactionService.executeTransaction(async (manager) => {
       // 更新用户基本信息
       if (updateUserDto.username) user.username = updateUserDto.username;
-      if (updateUserDto.name) user.name = updateUserDto.name;
+      if (updateUserDto.nickname) user.nickname = updateUserDto.nickname;
       if (updateUserDto.avatar !== undefined)
         user.avatar = updateUserDto.avatar;
       if (updateUserDto.isBuiltin !== undefined)

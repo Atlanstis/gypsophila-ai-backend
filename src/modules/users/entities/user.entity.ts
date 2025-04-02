@@ -4,10 +4,10 @@ import { TimeEntity } from 'src/common';
 
 import { UserRole } from '../../roles/entities/user-role.entity';
 import {
+  NICKNAME_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
   USER_AVATAR_MAX_LENGTH,
-  USER_NAME_MAX_LENGTH,
-} from '../constants';
+} from '../users.constants';
 import { UserAuth } from './user-auth.entity';
 
 /**
@@ -24,8 +24,8 @@ export class User extends TimeEntity {
   @Column({ length: USERNAME_MAX_LENGTH, nullable: false, unique: true })
   username: string;
 
-  @Column({ length: USER_NAME_MAX_LENGTH, nullable: false })
-  name: string;
+  @Column({ length: NICKNAME_MAX_LENGTH, nullable: false })
+  nickname: string;
 
   @Column({ name: 'is_builtin', default: false })
   isBuiltin: boolean;
