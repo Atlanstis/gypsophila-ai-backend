@@ -41,7 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       switch (status) {
         case HttpStatus.BAD_REQUEST:
           errorCode = StatusCode.BAD_REQUEST;
-          message = `请求参数错误: ${exception.message}`;
+          message = `请求参数错误`;
           break;
         case HttpStatus.UNAUTHORIZED:
           errorCode = StatusCode.UNAUTHORIZED;

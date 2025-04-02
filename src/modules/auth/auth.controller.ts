@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
-import { CurrentUser, DecryptField } from 'src/common';
+import { CurrentUser, DecryptField, JwtAuthGuard } from 'src/common';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -48,10 +47,22 @@ export class AuthController {
   /**
    * 获取当前用户信息（需要认证）
    */
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Get('info')
   async getUserInfo(@CurrentUser() user: any): Promise<any> {
-    // 返回JWT策略中提取的用户信息
+    // 返回JWT验证中提取的用户信息
     return user;
+  }
+
+  /**
+   * 用户登出
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(
+    @CurrentUser('id') userId: string,
+  ): Promise<{ success: boolean }> {
+    await this.authService.logout(userId);
+    return { success: true };
   }
 }

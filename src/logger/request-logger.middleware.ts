@@ -35,7 +35,7 @@ export class RequestLoggerMiddleware implements NestMiddleware {
       ip,
       userAgent: req.headers['user-agent'] || 'unknown',
       query: req.query,
-      body: this.sanitizeBody(req.body),
+      body: req.body,
       timestamp: new Date().toISOString(),
     };
 
@@ -121,34 +121,6 @@ export class RequestLoggerMiddleware implements NestMiddleware {
     }.bind(this);
 
     next();
-  }
-
-  /**
-   * 处理请求体，移除敏感信息
-   */
-  private sanitizeBody(body: any): any {
-    if (!body) return {};
-
-    // 创建一个副本
-    const sanitized = { ...body };
-
-    // 敏感字段列表
-    const sensitiveFields = [
-      'password',
-      'token',
-      'secret',
-      'authorization',
-      'refreshToken',
-    ];
-
-    // 替换敏感字段
-    for (const field of sensitiveFields) {
-      if (sanitized[field]) {
-        sanitized[field] = '******';
-      }
-    }
-
-    return sanitized;
   }
 
   /**

@@ -5,10 +5,11 @@ import { StatusCode } from '../enums/status-code.enum';
  */
 export type AuthErrorCode =
   | StatusCode.UNAUTHORIZED
-  | StatusCode.TOKEN_EXPIRED
-  | StatusCode.TOKEN_INVALID
+  | StatusCode.ACCESS_TOKEN_EXPIRED
+  | StatusCode.ACCESS_TOKEN_INVALID
   | StatusCode.REFRESH_TOKEN_EXPIRED
-  | StatusCode.REFRESH_TOKEN_INVALID;
+  | StatusCode.REFRESH_TOKEN_INVALID
+  | StatusCode.USER_NOT_FOUND;
 
 /**
  * 授权异常类

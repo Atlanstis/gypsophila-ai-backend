@@ -2,12 +2,13 @@ import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { AuthException, BusinessException, StatusCode } from 'src/common';
+import { ConfigService } from 'src/config/config.service';
+import { RedisService } from 'src/redis/redis.service';
 
-import { ConfigService } from '../../config/config.service';
 import { AuthType, UserAuth } from '../users/entities/user-auth.entity';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
@@ -38,6 +39,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserAuth)
@@ -88,7 +90,7 @@ export class AuthService {
   /**
    * 生成令牌对
    */
-  generateTokens(userId: string, username: string): TokenPair {
+  async generateTokens(userId: string, username: string): Promise<TokenPair> {
     const accessPayload: JwtPayload = {
       sub: userId,
       username,
@@ -101,24 +103,46 @@ export class AuthService {
       type: 'refresh',
     };
 
+    const accessToken = this.jwtService.sign(accessPayload, {
+      expiresIn: this.configService.get('jwt', 'expiresIn'),
+    });
+
+    const refreshToken = this.jwtService.sign(refreshPayload, {
+      expiresIn: this.configService.get('jwt', 'refreshExpiresIn'),
+    });
+
+    // 将令牌存储在Redis中
+    const accessTokenTtl = this.getExpiresInSeconds(
+      this.configService.get('jwt', 'expiresIn'),
+    );
+    const refreshTokenTtl = this.getExpiresInSeconds(
+      this.configService.get('jwt', 'refreshExpiresIn'),
+    );
+
+    await this.redisService.set(
+      `auth:token:${userId}:access`,
+      accessToken,
+      accessTokenTtl,
+    );
+    await this.redisService.set(
+      `auth:token:${userId}:refresh`,
+      refreshToken,
+      refreshTokenTtl,
+    );
+
     return {
-      accessToken: this.jwtService.sign(accessPayload, {
-        expiresIn: this.configService.get('jwt', 'expiresIn'),
-      }),
-      refreshToken: this.jwtService.sign(refreshPayload, {
-        expiresIn: this.configService.get('jwt', 'refreshExpiresIn'),
-      }),
+      accessToken,
+      refreshToken,
     };
   }
 
   /**
    * 刷新令牌
    */
-  refreshTokens(refreshToken: string): TokenPair {
+  async refreshTokens(refreshToken: string): Promise<TokenPair> {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
-        secret: this.configService.get('jwt', 'secret'),
-      }) as JwtPayload;
+      // 验证刷新令牌
+      const payload = this.jwtService.verify(refreshToken, {}) as JwtPayload;
 
       // 确保是刷新令牌
       if (payload.type !== 'refresh') {
@@ -128,40 +152,75 @@ export class AuthService {
         );
       }
 
+      // 验证Redis中是否存在此刷新令牌
+      const redisKey = `auth:token:${payload.sub}:refresh`;
+      const storedToken = await this.redisService.get(redisKey);
+
+      if (!storedToken || storedToken !== refreshToken) {
+        throw new AuthException(
+          '无效的刷新令牌',
+          StatusCode.REFRESH_TOKEN_INVALID,
+        );
+      }
+
+      // 删除旧令牌
+      await this.redisService.delete(`auth:token:${payload.sub}:access`);
+      await this.redisService.delete(`auth:token:${payload.sub}:refresh`);
+
+      // 生成新的令牌对
       return this.generateTokens(payload.sub, payload.username);
     } catch (error) {
       if (error instanceof AuthException) {
         throw error;
       }
 
-      if (error.name === 'TokenExpiredError') {
+      if (error instanceof TokenExpiredError) {
         throw new AuthException(
           '刷新令牌已过期',
           StatusCode.REFRESH_TOKEN_EXPIRED,
         );
       }
+      if (error instanceof JsonWebTokenError) {
+        throw new AuthException(
+          '无效的访问令牌',
+          StatusCode.ACCESS_TOKEN_INVALID,
+        );
+      }
 
       throw new AuthException(
-        '无效的刷新令牌',
-        StatusCode.REFRESH_TOKEN_INVALID,
+        error.message || '认证失败',
+        StatusCode.UNAUTHORIZED,
       );
     }
   }
 
   /**
-   * 验证访问令牌
+   * 用户登出
    */
-  verifyToken(token: string): JwtPayload {
-    try {
-      return this.jwtService.verify(token, {
-        secret: this.configService.get('jwt', 'secret'),
-      }) as JwtPayload;
-    } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        throw new AuthException('令牌已过期', StatusCode.TOKEN_EXPIRED);
-      }
+  async logout(userId: string): Promise<void> {
+    // 删除Redis中的令牌
+    await this.redisService.delete(`auth:token:${userId}:access`);
+    await this.redisService.delete(`auth:token:${userId}:refresh`);
+  }
 
-      throw new AuthException('无效的令牌', StatusCode.TOKEN_INVALID);
+  /**
+   * 将过期时间字符串转换为秒数
+   */
+  private getExpiresInSeconds(expiresIn: string): number {
+    const unit = expiresIn.slice(-1);
+    const value = parseInt(expiresIn.slice(0, -1), 10);
+
+    switch (unit) {
+      case 's':
+        return value;
+      case 'm':
+        return value * 60;
+      case 'h':
+        return value * 60 * 60;
+      case 'd':
+        return value * 24 * 60 * 60;
+      default:
+        return 3600; // 默认1小时
     }
   }
 }

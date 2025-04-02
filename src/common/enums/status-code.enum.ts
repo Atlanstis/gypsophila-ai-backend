@@ -11,8 +11,6 @@ export enum StatusCode {
   /** 客户端错误 4xx */
   // 通用错误
   BAD_REQUEST = 400000,
-  // 未授权
-  UNAUTHORIZED = 401000,
   // 禁止访问
   ACCESS_FORBIDDEN = 403000,
   // 未找到
@@ -34,10 +32,12 @@ export enum StatusCode {
   BUSINESS_ERROR = 400001,
 
   /** 授权认证相关错误码 */
-  // 令牌过期
-  TOKEN_EXPIRED = 401001,
-  // 令牌无效
-  TOKEN_INVALID = 401002,
+  // 未授权
+  UNAUTHORIZED = 401000,
+  // 访问令牌过期-需要重新登录
+  ACCESS_TOKEN_EXPIRED = 401001,
+  // 访问令牌无效
+  ACCESS_TOKEN_INVALID = 401002,
   // 刷新令牌过期
   REFRESH_TOKEN_EXPIRED = 401003,
   // 刷新令牌无效
