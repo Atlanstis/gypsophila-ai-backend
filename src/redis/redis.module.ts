@@ -1,6 +1,9 @@
 import { Global, Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { LoggerModule } from '../logger/logger.module';
+import { RedisCacheInterceptor } from './redis-cache.interceptor';
+import { RedisHelperService } from './redis-helper.service';
 import { RedisService } from './redis.service';
 
 /**
@@ -10,7 +13,14 @@ import { RedisService } from './redis.service';
 @Global()
 @Module({
   imports: [LoggerModule],
-  providers: [RedisService],
-  exports: [RedisService],
+  providers: [
+    RedisService,
+    RedisHelperService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RedisCacheInterceptor,
+    },
+  ],
+  exports: [RedisService, RedisHelperService],
 })
 export class RedisModule {}

@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 
 import { JwtPayload } from 'src/modules/auth/auth.service';
+import { AuthRedisKey } from 'src/redis/redis-key.constant';
 
 import { ConfigService } from '../../config/config.service';
 import { RedisService } from '../../redis/redis.service';
@@ -49,7 +50,7 @@ export class JwtAuthGuard implements CanActivate {
       }
 
       // 验证Redis中是否存在此令牌
-      const redisKey = `auth:token:${payload.sub}:access`;
+      const redisKey = AuthRedisKey.accessToken(payload.sub);
       const storedToken = await this.redisService.get(redisKey);
 
       if (!storedToken) {

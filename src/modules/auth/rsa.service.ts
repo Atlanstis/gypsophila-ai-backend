@@ -11,9 +11,8 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 
 import { BusinessException } from 'src/common';
 import { ConfigService } from 'src/config/config.service';
+import { AuthRedisKey } from 'src/redis/redis-key.constant';
 import { RedisService } from 'src/redis/redis.service';
-
-import { REDIS_PRIVATE_KEY, REDIS_PUBLIC_KEY } from './rsa-redis-key';
 
 /**
  * RSA 加密服务
@@ -54,8 +53,12 @@ export class RsaService implements OnModuleInit {
     }
 
     // 检查 Redis 中是否存在密钥对
-    const publicKeyInRedis = await this.redisService.get(REDIS_PUBLIC_KEY);
-    const privateKeyInRedis = await this.redisService.get(REDIS_PRIVATE_KEY);
+    const publicKeyInRedis = await this.redisService.get(
+      AuthRedisKey.PUBLIC_KEY,
+    );
+    const privateKeyInRedis = await this.redisService.get(
+      AuthRedisKey.PRIVATE_KEY,
+    );
 
     // 非生产环境，先尝试从 Redis 获取
     if (publicKeyInRedis && privateKeyInRedis) {
@@ -93,10 +96,10 @@ export class RsaService implements OnModuleInit {
     privateKey?: string,
   ): Promise<void> {
     if (publicKey) {
-      await this.redisService.set(REDIS_PUBLIC_KEY, publicKey);
+      await this.redisService.set(AuthRedisKey.PUBLIC_KEY, publicKey);
     }
     if (privateKey) {
-      await this.redisService.set(REDIS_PRIVATE_KEY, privateKey);
+      await this.redisService.set(AuthRedisKey.PRIVATE_KEY, privateKey);
     }
   }
 
@@ -138,7 +141,9 @@ export class RsaService implements OnModuleInit {
    */
   async getPublicKey(): Promise<string> {
     // 优先从 Redis 获取
-    const publicKeyInRedis = await this.redisService.get(REDIS_PUBLIC_KEY);
+    const publicKeyInRedis = await this.redisService.get(
+      AuthRedisKey.PUBLIC_KEY,
+    );
     if (publicKeyInRedis) {
       return publicKeyInRedis;
     }
@@ -154,13 +159,14 @@ export class RsaService implements OnModuleInit {
    */
   private async getPrivateKey(): Promise<string> {
     // 优先从 Redis 获取
-    const privateKeyInRedis = await this.redisService.get(REDIS_PRIVATE_KEY);
+    const privateKeyInRedis = await this.redisService.get(
+      AuthRedisKey.PRIVATE_KEY,
+    );
     if (privateKeyInRedis) {
       return privateKeyInRedis;
     }
 
     // Redis中不存在则从文件获取
-
     const privateKey = fs.readFileSync(this.privateKeyPath, 'utf8');
     await this.saveKeysToRedis(undefined, privateKey);
     return privateKey;

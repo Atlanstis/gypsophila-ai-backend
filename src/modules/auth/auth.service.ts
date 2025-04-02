@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { AuthException, BusinessException, StatusCode } from 'src/common';
 import { ConfigService } from 'src/config/config.service';
+import { AuthRedisKey } from 'src/redis/redis-key.constant';
 import { RedisService } from 'src/redis/redis.service';
 
 import { AuthType, UserAuth } from '../users/entities/user-auth.entity';
@@ -120,12 +121,12 @@ export class AuthService {
     );
 
     await this.redisService.set(
-      `auth:token:${userId}:access`,
+      AuthRedisKey.accessToken(userId),
       accessToken,
       accessTokenTtl,
     );
     await this.redisService.set(
-      `auth:token:${userId}:refresh`,
+      AuthRedisKey.refreshToken(userId),
       refreshToken,
       refreshTokenTtl,
     );
@@ -153,7 +154,7 @@ export class AuthService {
       }
 
       // 验证Redis中是否存在此刷新令牌
-      const redisKey = `auth:token:${payload.sub}:refresh`;
+      const redisKey = AuthRedisKey.refreshToken(payload.sub);
       const storedToken = await this.redisService.get(redisKey);
 
       if (!storedToken || storedToken !== refreshToken) {
@@ -164,8 +165,8 @@ export class AuthService {
       }
 
       // 删除旧令牌
-      await this.redisService.delete(`auth:token:${payload.sub}:access`);
-      await this.redisService.delete(`auth:token:${payload.sub}:refresh`);
+      await this.redisService.delete(AuthRedisKey.accessToken(payload.sub));
+      await this.redisService.delete(AuthRedisKey.refreshToken(payload.sub));
 
       // 生成新的令牌对
       return this.generateTokens(payload.sub, payload.username);
@@ -199,8 +200,8 @@ export class AuthService {
    */
   async logout(userId: string): Promise<void> {
     // 删除Redis中的令牌
-    await this.redisService.delete(`auth:token:${userId}:access`);
-    await this.redisService.delete(`auth:token:${userId}:refresh`);
+    await this.redisService.delete(AuthRedisKey.accessToken(userId));
+    await this.redisService.delete(AuthRedisKey.refreshToken(userId));
   }
 
   /**
