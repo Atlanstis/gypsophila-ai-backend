@@ -1,3 +1,5 @@
+import { type Request } from 'express';
+
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 
@@ -25,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
    * 验证请求是否可以通过
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest() as Request;
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {

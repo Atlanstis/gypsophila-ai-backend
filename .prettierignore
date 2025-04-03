@@ -1,0 +1,23 @@
+# 编译输出
+dist/
+dist-types/
+node_modules/
+build/
+
+# 日志
+logs/
+*.log
+
+# 测试覆盖率
+coverage/
+
+# 密钥文件
+keys/
+
+# 配置文件
+.env
+.env.*
+
+# 其他不需要格式化的文件
+*.json
+*.md 

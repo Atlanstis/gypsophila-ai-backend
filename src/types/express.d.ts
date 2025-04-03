@@ -1,4 +1,4 @@
-import { ICurrentUser } from '../decorators/user.decorator';
+import { ICurrentUser } from '../common/decorators/user.decorator';
 
 declare global {
   namespace Express {
