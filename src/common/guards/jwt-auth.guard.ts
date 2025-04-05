@@ -3,7 +3,7 @@ import { type Request } from 'express';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 
-import { JwtPayload } from 'src/modules/auth/auth.service';
+import { JwtPayload } from 'src/modules/auth/types/business.types';
 import { AuthRedisKey } from 'src/redis/redis-key.constant';
 
 import { ConfigService } from '../../config/config.service';

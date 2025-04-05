@@ -2,7 +2,9 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ValidationMessageHelper as VMH } from 'src/common';
 
-export class RefreshTokenDto {
+import { IRefreshTokenDto } from '../types/dto.types';
+
+export class RefreshTokenDto implements IRefreshTokenDto {
   /**
    * 刷新令牌
    */

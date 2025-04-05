@@ -11,6 +11,13 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RsaService } from './rsa.service';
+import {
+  GetPublicKeyResponse,
+  GetUserInfoResponse,
+  LoginResponse,
+  LogoutResponse,
+  RefreshTokenResponse,
+} from './types/api.types';
 
 /**
  * 认证控制器
@@ -28,7 +35,7 @@ export class AuthController {
    * 用于客户端对敏感数据进行加密
    */
   @Get('public-key')
-  async getPublicKey(): Promise<{ publicKey: string }> {
+  async getPublicKey(): Promise<GetPublicKeyResponse['data']> {
     const publicKey = await this.rsaService.getPublicKey();
     return { publicKey };
   }
@@ -37,7 +44,9 @@ export class AuthController {
    * 用户登录
    */
   @Post('login')
-  async login(@Body(DecryptField('password')) loginDto: LoginDto) {
+  async login(
+    @Body(DecryptField('password')) loginDto: LoginDto,
+  ): Promise<LoginResponse['data']> {
     return this.authService.login(loginDto);
   }
 
@@ -45,7 +54,9 @@ export class AuthController {
    * 刷新访问令牌
    */
   @Post('refresh')
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponse['data']> {
     return this.authService.refreshTokens(refreshTokenDto.refreshToken);
   }
 
@@ -54,7 +65,9 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('info')
-  async getUserInfo(@CurrentUser() user: ICurrentUser): Promise<any> {
+  async getUserInfo(
+    @CurrentUser() user: ICurrentUser,
+  ): Promise<GetUserInfoResponse['data']> {
     // 返回JWT验证中提取的用户信息
     return user;
   }
@@ -66,7 +79,7 @@ export class AuthController {
   @Post('logout')
   async logout(
     @CurrentUser('id') userId: string,
-  ): Promise<{ success: boolean }> {
+  ): Promise<LogoutResponse['data']> {
     await this.authService.logout(userId);
     return { success: true };
   }

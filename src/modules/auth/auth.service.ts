@@ -13,23 +13,7 @@ import { RedisService } from 'src/redis/redis.service';
 import { AuthType, UserAuth } from '../users/entities/user-auth.entity';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
-
-/**
- * Token对类型定义
- */
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-}
-
-/**
- * JWT载荷接口
- */
-export interface JwtPayload {
-  sub: string;
-  username: string;
-  type: 'access' | 'refresh';
-}
+import { JwtPayload, TokenPair } from './types/business.types';
 
 /**
  * 认证服务

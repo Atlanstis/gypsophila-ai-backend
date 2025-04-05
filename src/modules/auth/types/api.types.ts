@@ -1,50 +1,13 @@
 /**
  * 认证模块类型定义
  */
-import { ApiResponse } from '../common/response.types';
+import { ICurrentUser } from 'src/common/decorators/user.decorator';
+import { ApiResponse } from 'src/types/api/response.types';
 
-/**
- * 用户信息类型
- */
-export interface CurrentUser {
-  id: string;
-  username: string;
-}
+import { TokenPair } from './business.types';
 
-/**
- * 令牌对类型
- */
-export interface TokenPair {
-  /**
-   * 访问令牌
-   */
-  accessToken: string;
-
-  /**
-   * 刷新令牌
-   */
-  refreshToken: string;
-}
-
-/**
- * JWT载荷接口
- */
-export interface JwtPayload {
-  /**
-   * 用户ID
-   */
-  sub: string;
-
-  /**
-   * 用户名
-   */
-  username: string;
-
-  /**
-   * 令牌类型
-   */
-  type: 'access' | 'refresh';
-}
+// 复用ICurrentUser，不再定义CurrentUser接口
+export type CurrentUser = ICurrentUser;
 
 /**
  * 登录请求类型
