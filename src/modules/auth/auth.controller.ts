@@ -5,6 +5,7 @@ import {
   DecryptField,
   ICurrentUser,
   JwtAuthGuard,
+  ResponseMessage,
 } from 'src/common';
 
 import { AuthService } from './auth.service';
@@ -44,6 +45,7 @@ export class AuthController {
    * 用户登录
    */
   @Post('login')
+  @ResponseMessage('登录成功')
   async login(
     @Body(DecryptField('password')) loginDto: LoginDto,
   ): Promise<LoginResponse['data']> {
@@ -54,6 +56,7 @@ export class AuthController {
    * 刷新访问令牌
    */
   @Post('refresh')
+  @ResponseMessage('令牌刷新成功')
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<RefreshTokenResponse['data']> {
@@ -77,10 +80,10 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Post('logout')
+  @ResponseMessage('登出成功')
   async logout(
     @CurrentUser('id') userId: string,
   ): Promise<LogoutResponse['data']> {
-    await this.authService.logout(userId);
-    return { success: true };
+    return await this.authService.logout(userId);
   }
 }
