@@ -4,14 +4,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { BusinessException } from 'src/common';
+import { TransactionService } from 'src/database/transaction.service';
 
-import { TransactionService } from '../../database/transaction.service';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { QueryRoleDto } from './dto/query-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { Role } from './entities/role.entity';
-import { QueryRoleListResponse } from './types/api.types';
-import { IRoleEntity } from './types/entity.types';
+import { CreateRoleDto, QueryRoleDto, UpdateRoleDto } from './dto';
+import { Role } from './entities';
+import { IRoleEntity, QueryRoleListResponse } from './types';
 
 /**
  * 角色服务

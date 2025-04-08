@@ -30,7 +30,7 @@ import {
   QueryPermissionListResponse,
   UpdateMenuResponse,
   UpdatePermissionResponse,
-} from './types/api.types';
+} from './types';
 
 /**
  * 菜单控制器

@@ -4,7 +4,7 @@
 import { ICurrentUser } from 'src/common/decorators/user.decorator';
 import { ApiResponse } from 'src/types/api/response.types';
 
-import { TokenPair } from './business.types';
+import { ITokenPair } from './business.types';
 import { ILoginDto, IRefreshTokenDto } from './dto.types';
 
 // 复用ICurrentUser，不再定义CurrentUser接口
@@ -18,7 +18,7 @@ export type LoginRequest = ILoginDto;
 /**
  * 登录响应类型
  */
-export type LoginResponse = ApiResponse<TokenPair>;
+export type LoginResponse = ApiResponse<ITokenPair>;
 
 /**
  * 刷新令牌请求类型
@@ -28,7 +28,7 @@ export type RefreshTokenRequest = IRefreshTokenDto;
 /**
  * 刷新令牌响应类型
  */
-export type RefreshTokenResponse = ApiResponse<TokenPair>;
+export type RefreshTokenResponse = ApiResponse<ITokenPair>;
 
 /**
  * 获取公钥响应类型

@@ -3,7 +3,7 @@ import { type Request } from 'express';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 
-import { JwtPayload } from 'src/modules/auth/types/business.types';
+import { IJwtPayload } from 'src/modules/auth/types';
 import { AuthRedisKey } from 'src/redis/redis-key.constant';
 
 import { ConfigService } from '../../config/config.service';
@@ -39,7 +39,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       // 验证JWT令牌
-      const payload: JwtPayload = await this.jwtService.verifyAsync(token, {
+      const payload: IJwtPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('jwt', 'secret'),
       });
 

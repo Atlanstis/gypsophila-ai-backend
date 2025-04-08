@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { TransactionService } from '../../database/transaction.service';
+import { TransactionService } from 'src/database/transaction.service';
+
 import { Menu, Permission, RoleMenu } from './entities';
 import { MenusController } from './menus.controller';
 import { MenusService } from './menus.service';

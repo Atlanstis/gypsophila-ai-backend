@@ -11,9 +11,7 @@ import {
 
 import { ResponseMessage } from 'src/common';
 
-import { CreateRoleDto } from './dto/create-role.dto';
-import { QueryRoleDto } from './dto/query-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { CreateRoleDto, QueryRoleDto, UpdateRoleDto } from './dto';
 import { RolesService } from './roles.service';
 import {
   CreateRoleResponse,
@@ -21,7 +19,7 @@ import {
   QueryRoleDetailResponse,
   QueryRoleListResponse,
   UpdateRoleResponse,
-} from './types/api.types';
+} from './types';
 
 /**
  * 角色控制器

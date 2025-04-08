@@ -12,8 +12,8 @@ import { RedisService } from 'src/redis/redis.service';
 
 import { User, UserAuth } from '../users/entities';
 import { AuthType } from '../users/types';
-import { LoginDto } from './dto/login.dto';
-import { JwtPayload, TokenPair } from './types/business.types';
+import { LoginDto } from './dto';
+import { IJwtPayload, ITokenPair } from './types';
 
 /**
  * 认证服务
@@ -34,7 +34,7 @@ export class AuthService {
   /**
    * 用户登录
    */
-  async login(loginDto: LoginDto): Promise<TokenPair> {
+  async login(loginDto: LoginDto): Promise<ITokenPair> {
     // 通过用户名查找用户
     const user = await this.userRepository.findOne({
       where: { username: loginDto.username },
@@ -75,14 +75,14 @@ export class AuthService {
   /**
    * 生成令牌对
    */
-  async generateTokens(userId: string, username: string): Promise<TokenPair> {
-    const accessPayload: JwtPayload = {
+  async generateTokens(userId: string, username: string): Promise<ITokenPair> {
+    const accessPayload: IJwtPayload = {
       sub: userId,
       username,
       type: 'access',
     };
 
-    const refreshPayload: JwtPayload = {
+    const refreshPayload: IJwtPayload = {
       sub: userId,
       username,
       type: 'refresh',
@@ -124,10 +124,10 @@ export class AuthService {
   /**
    * 刷新令牌
    */
-  async refreshTokens(refreshToken: string): Promise<TokenPair> {
+  async refreshTokens(refreshToken: string): Promise<ITokenPair> {
     try {
       // 验证刷新令牌
-      const payload = this.jwtService.verify(refreshToken, {}) as JwtPayload;
+      const payload = this.jwtService.verify<IJwtPayload>(refreshToken, {});
 
       // 确保是刷新令牌
       if (payload.type !== 'refresh') {

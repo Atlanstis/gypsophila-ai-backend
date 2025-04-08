@@ -11,16 +11,14 @@ import {
 
 import { ResponseMessage } from 'src/common';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { QueryUserDto } from './dto/query-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from './dto';
 import {
   CreateUserResponse,
   DeleteUserResponse,
   QueryUserDetailResponse,
   QueryUserListResponse,
   UpdateUserResponse,
-} from './types/api.types';
+} from './types';
 import { UsersService } from './users.service';
 
 /**

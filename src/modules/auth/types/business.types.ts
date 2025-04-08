@@ -1,7 +1,7 @@
 /**
  * 令牌对类型
  */
-export interface TokenPair {
+export interface ITokenPair {
   /**
    * 访问令牌
    */
@@ -16,7 +16,7 @@ export interface TokenPair {
 /**
  * JWT载荷接口
  */
-export interface JwtPayload {
+export interface IJwtPayload {
   /**
    * 用户ID
    */

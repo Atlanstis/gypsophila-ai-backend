@@ -7,9 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BusinessException } from 'src/common';
 import { TransactionService } from 'src/database/transaction.service';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { QueryUserDto } from './dto/query-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from './dto';
 import { User, UserAuth } from './entities';
 import { AuthType, QueryUserListResponse } from './types';
 

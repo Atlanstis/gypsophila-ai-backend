@@ -9,8 +9,7 @@ import {
 } from 'src/common';
 
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { LoginDto, RefreshTokenDto } from './dto';
 import { RsaService } from './rsa.service';
 import {
   GetPublicKeyResponse,
@@ -18,7 +17,7 @@ import {
   LoginResponse,
   LogoutResponse,
   RefreshTokenResponse,
-} from './types/api.types';
+} from './types';
 
 /**
  * 认证控制器
