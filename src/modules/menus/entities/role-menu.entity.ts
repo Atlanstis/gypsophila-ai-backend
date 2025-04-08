@@ -9,13 +9,14 @@ import {
 import { TimeEntity } from 'src/common';
 
 import { Role } from '../../roles/entities/role.entity';
+import { IRoleMenuEntity } from '../types/entity.types';
 import { Menu } from './menu.entity';
 
 /**
  * 角色菜单关联实体
  */
 @Entity('role_menus')
-export class RoleMenu extends TimeEntity {
+export class RoleMenu extends TimeEntity implements IRoleMenuEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 

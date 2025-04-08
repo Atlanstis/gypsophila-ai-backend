@@ -1,20 +1,20 @@
 import { Repository } from 'typeorm';
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { TransactionService } from '../../database/transaction.service';
-import { CreateMenuDto } from './dto/create-menu.dto';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { QueryMenuDto } from './dto/query-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { Menu } from './entities/menu.entity';
-import { Permission } from './entities/permission.entity';
+import { BusinessException } from 'src/common';
+import { TransactionService } from 'src/database/transaction.service';
+
+import {
+  CreateMenuDto,
+  CreatePermissionDto,
+  QueryMenuDto,
+  UpdateMenuDto,
+  UpdatePermissionDto,
+} from './dto';
+import { Menu, Permission } from './entities';
+import { MenuTreeNode } from './types';
 
 /**
  * 菜单服务
@@ -32,13 +32,13 @@ export class MenusService {
   /**
    * 创建菜单
    */
-  async createMenu(createMenuDto: CreateMenuDto): Promise<Menu> {
+  async createMenu(createMenuDto: CreateMenuDto): Promise<void> {
     // 检查菜单key是否存在
     const existingMenu = await this.menuRepository.findOne({
       where: { key: createMenuDto.key },
     });
     if (existingMenu) {
-      throw new BadRequestException(`菜单Key ${createMenuDto.key} 已存在`);
+      throw new BusinessException(`菜单Key ${createMenuDto.key} 已存在`);
     }
 
     // 如果有父级菜单，检查父级菜单是否存在
@@ -47,14 +47,14 @@ export class MenusService {
         where: { id: createMenuDto.parentId },
       });
       if (!parentMenu) {
-        throw new BadRequestException(
+        throw new BusinessException(
           `父级菜单ID ${createMenuDto.parentId} 不存在`,
         );
       }
     }
 
     // 使用事务创建菜单
-    return this.transactionService.executeTransaction(async (manager) => {
+    await this.transactionService.executeTransaction(async (manager) => {
       // 创建菜单
       const menu = manager.create(Menu, {
         key: createMenuDto.key,
@@ -75,14 +75,14 @@ export class MenusService {
       });
 
       // 保存菜单信息
-      return await manager.save(menu);
+      await manager.save(menu);
     });
   }
 
   /**
    * 查询菜单列表（树形结构）
    */
-  async findAllMenus(query: QueryMenuDto): Promise<Menu[]> {
+  async findAllMenus(query: QueryMenuDto): Promise<MenuTreeNode[]> {
     const { key, name, type, parentId, isVisible, module } = query;
 
     // 构建查询条件
@@ -128,16 +128,20 @@ export class MenusService {
   /**
    * 构建菜单树
    */
-  private buildMenuTree(menus: Menu[], parentId: number = null): Menu[] {
-    const result: Menu[] = [];
+  private buildMenuTree(
+    menus: Menu[],
+    parentId: number = null,
+  ): MenuTreeNode[] {
+    const result: MenuTreeNode[] = [];
 
     for (const menu of menus) {
       if (menu.parentId === parentId) {
+        const menuNode = { ...menu } as MenuTreeNode;
         const children = this.buildMenuTree(menus, menu.id);
         if (children.length > 0) {
-          menu.children = children;
+          menuNode.children = children;
         }
-        result.push(menu);
+        result.push(menuNode);
       }
     }
 
@@ -154,7 +158,7 @@ export class MenusService {
     });
 
     if (!menu) {
-      throw new NotFoundException(`菜单ID ${id} 不存在`);
+      throw new BusinessException(`菜单ID ${id} 不存在`);
     }
 
     return menu;
@@ -163,7 +167,7 @@ export class MenusService {
   /**
    * 更新菜单
    */
-  async updateMenu(id: number, updateMenuDto: UpdateMenuDto): Promise<Menu> {
+  async updateMenu(id: number, updateMenuDto: UpdateMenuDto): Promise<void> {
     const menu = await this.findOneMenu(id);
 
     // 如果更新菜单key，检查是否已存在
@@ -172,7 +176,7 @@ export class MenusService {
         where: { key: updateMenuDto.key },
       });
       if (existingMenu) {
-        throw new BadRequestException(`菜单Key ${updateMenuDto.key} 已存在`);
+        throw new BusinessException(`菜单Key ${updateMenuDto.key} 已存在`);
       }
     }
 
@@ -182,19 +186,19 @@ export class MenusService {
         where: { id: updateMenuDto.parentId },
       });
       if (!parentMenu) {
-        throw new BadRequestException(
+        throw new BusinessException(
           `父级菜单ID ${updateMenuDto.parentId} 不存在`,
         );
       }
 
       // 检查是否将菜单设置为自己的子菜单
       if (updateMenuDto.parentId === menu.id) {
-        throw new BadRequestException('不能将菜单设置为自己的子菜单');
+        throw new BusinessException('不能将菜单设置为自己的子菜单');
       }
     }
 
     // 使用事务更新菜单
-    return this.transactionService.executeTransaction(async (manager) => {
+    await this.transactionService.executeTransaction(async (manager) => {
       // 更新菜单基本信息
       if (updateMenuDto.key) menu.key = updateMenuDto.key;
       if (updateMenuDto.name) menu.name = updateMenuDto.name;
@@ -215,12 +219,6 @@ export class MenusService {
 
       // 保存菜单信息
       await manager.save(menu);
-
-      // 重新查询菜单信息
-      return manager.findOne(Menu, {
-        where: { id },
-        relations: ['permissions', 'parent', 'children', 'roleMenus'],
-      });
     });
   }
 
@@ -236,7 +234,7 @@ export class MenusService {
     });
 
     if (childrenCount > 0) {
-      throw new BadRequestException('请先删除子菜单');
+      throw new BusinessException('请先删除子菜单');
     }
 
     // 检查是否有关联权限
@@ -245,12 +243,11 @@ export class MenusService {
     });
 
     if (permissionsCount > 0) {
-      throw new BadRequestException('请先删除菜单下的权限');
+      throw new BusinessException('请先删除菜单下的权限');
     }
 
     // 使用事务删除菜单
     await this.transactionService.executeTransaction(async (manager) => {
-      // 删除菜单
       await manager.remove(menu);
     });
   }
@@ -260,14 +257,13 @@ export class MenusService {
    */
   async createPermission(
     createPermissionDto: CreatePermissionDto,
-  ): Promise<Permission> {
+  ): Promise<void> {
     // 检查菜单是否存在
     const menu = await this.menuRepository.findOne({
       where: { id: createPermissionDto.menuId },
     });
-
     if (!menu) {
-      throw new BadRequestException(
+      throw new BusinessException(
         `菜单ID ${createPermissionDto.menuId} 不存在`,
       );
     }
@@ -277,13 +273,11 @@ export class MenusService {
       where: { key: createPermissionDto.key },
     });
     if (existingPermission) {
-      throw new BadRequestException(
-        `权限Key ${createPermissionDto.key} 已存在`,
-      );
+      throw new BusinessException(`权限Key ${createPermissionDto.key} 已存在`);
     }
 
     // 使用事务创建权限
-    return this.transactionService.executeTransaction(async (manager) => {
+    await this.transactionService.executeTransaction(async (manager) => {
       // 创建权限
       const permission = manager.create(Permission, {
         menuId: createPermissionDto.menuId,
@@ -292,7 +286,7 @@ export class MenusService {
       });
 
       // 保存权限信息
-      return await manager.save(permission);
+      await manager.save(permission);
     });
   }
 
@@ -300,14 +294,17 @@ export class MenusService {
    * 查询权限列表
    */
   async findAllPermissions(menuId?: number): Promise<Permission[]> {
-    const where = menuId ? { menuId } : {};
+    const queryBuilder =
+      this.permissionRepository.createQueryBuilder('permission');
 
-    const permissions = await this.permissionRepository.find({
-      where,
-      relations: ['menu'],
-    });
+    if (menuId !== undefined) {
+      queryBuilder.andWhere('permission.menuId = :menuId', { menuId });
+    }
 
-    return permissions;
+    return queryBuilder
+      .leftJoinAndSelect('permission.menu', 'menu')
+      .orderBy('permission.id', 'ASC')
+      .getMany();
   }
 
   /**
@@ -320,7 +317,7 @@ export class MenusService {
     });
 
     if (!permission) {
-      throw new NotFoundException(`权限ID ${id} 不存在`);
+      throw new BusinessException(`权限ID ${id} 不存在`);
     }
 
     return permission;
@@ -332,7 +329,7 @@ export class MenusService {
   async updatePermission(
     id: number,
     updatePermissionDto: UpdatePermissionDto,
-  ): Promise<Permission> {
+  ): Promise<void> {
     const permission = await this.findOnePermission(id);
 
     // 如果更新菜单ID，检查菜单是否存在
@@ -343,9 +340,8 @@ export class MenusService {
       const menu = await this.menuRepository.findOne({
         where: { id: updatePermissionDto.menuId },
       });
-
       if (!menu) {
-        throw new BadRequestException(
+        throw new BusinessException(
           `菜单ID ${updatePermissionDto.menuId} 不存在`,
         );
       }
@@ -357,14 +353,14 @@ export class MenusService {
         where: { key: updatePermissionDto.key },
       });
       if (existingPermission) {
-        throw new BadRequestException(
+        throw new BusinessException(
           `权限Key ${updatePermissionDto.key} 已存在`,
         );
       }
     }
 
     // 使用事务更新权限
-    return this.transactionService.executeTransaction(async (manager) => {
+    await this.transactionService.executeTransaction(async (manager) => {
       // 更新权限基本信息
       if (updatePermissionDto.menuId)
         permission.menuId = updatePermissionDto.menuId;
@@ -373,12 +369,6 @@ export class MenusService {
 
       // 保存权限信息
       await manager.save(permission);
-
-      // 重新查询权限信息
-      return manager.findOne(Permission, {
-        where: { id },
-        relations: ['menu', 'rolePermissions'],
-      });
     });
   }
 
@@ -390,7 +380,6 @@ export class MenusService {
 
     // 使用事务删除权限
     await this.transactionService.executeTransaction(async (manager) => {
-      // 删除权限
       await manager.remove(permission);
     });
   }

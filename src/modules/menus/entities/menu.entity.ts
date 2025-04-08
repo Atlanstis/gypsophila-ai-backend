@@ -15,30 +15,16 @@ import {
   MENU_LAYOUT_MAX_LENGTH,
   MENU_NAME_MAX_LENGTH,
   MENU_PATH_MAX_LENGTH,
-} from '../constants';
+} from '../menus.constants';
+import { IMenuEntity, MenuModule, MenuType } from '../types/entity.types';
 import { Permission } from './permission.entity';
 import { RoleMenu } from './role-menu.entity';
-
-/**
- * 菜单类型
- */
-export enum MenuType {
-  DIRECTORY = 'directory',
-  PAGE = 'page',
-}
-
-/**
- * 菜单所属模块
- */
-export enum MenuModule {
-  ADMIN = 'admin',
-}
 
 /**
  * 菜单实体
  */
 @Entity('menus')
-export class Menu extends TimeEntity {
+export class Menu extends TimeEntity implements IMenuEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 

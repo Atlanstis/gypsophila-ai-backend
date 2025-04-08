@@ -9,12 +9,28 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { CreateMenuDto } from './dto/create-menu.dto';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { QueryMenuDto } from './dto/query-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { ResponseMessage } from 'src/common';
+
+import {
+  CreateMenuDto,
+  CreatePermissionDto,
+  QueryMenuDto,
+  UpdateMenuDto,
+  UpdatePermissionDto,
+} from './dto';
 import { MenusService } from './menus.service';
+import {
+  CreateMenuResponse,
+  CreatePermissionResponse,
+  DeleteMenuResponse,
+  DeletePermissionResponse,
+  GetMenuResponse,
+  GetPermissionResponse,
+  QueryMenuListResponse,
+  QueryPermissionListResponse,
+  UpdateMenuResponse,
+  UpdatePermissionResponse,
+} from './types/api.types';
 
 /**
  * 菜单控制器
@@ -27,15 +43,21 @@ export class MenusController {
    * 创建菜单
    */
   @Post()
-  createMenu(@Body() createMenuDto: CreateMenuDto) {
-    return this.menusService.createMenu(createMenuDto);
+  @ResponseMessage('创建菜单成功')
+  async createMenu(
+    @Body() data: CreateMenuDto,
+  ): Promise<CreateMenuResponse['data']> {
+    return await this.menusService.createMenu(data);
   }
 
   /**
    * 查询菜单列表
    */
   @Get()
-  findAllMenus(@Query() query: QueryMenuDto) {
+  @ResponseMessage('查询菜单列表成功')
+  async findAllMenus(
+    @Query() query: QueryMenuDto,
+  ): Promise<QueryMenuListResponse['data']> {
     return this.menusService.findAllMenus(query);
   }
 
@@ -43,7 +65,8 @@ export class MenusController {
    * 查询单个菜单
    */
   @Get(':id')
-  findOneMenu(@Param('id') id: string) {
+  @ResponseMessage('查询菜单成功')
+  async findOneMenu(@Param('id') id: string): Promise<GetMenuResponse['data']> {
     return this.menusService.findOneMenu(+id);
   }
 
@@ -51,39 +74,56 @@ export class MenusController {
    * 更新菜单
    */
   @Patch(':id')
-  updateMenu(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
-    return this.menusService.updateMenu(+id, updateMenuDto);
+  @ResponseMessage('更新菜单成功')
+  async updateMenu(
+    @Param('id') id: string,
+    @Body() data: UpdateMenuDto,
+  ): Promise<UpdateMenuResponse['data']> {
+    return await this.menusService.updateMenu(+id, data);
   }
 
   /**
    * 删除菜单
    */
   @Delete(':id')
-  removeMenu(@Param('id') id: string) {
-    return this.menusService.removeMenu(+id);
+  @ResponseMessage('删除菜单成功')
+  async removeMenu(
+    @Param('id') id: string,
+  ): Promise<DeleteMenuResponse['data']> {
+    return await this.menusService.removeMenu(+id);
   }
 
   /**
    * 创建权限
    */
   @Post('permissions')
-  createPermission(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.menusService.createPermission(createPermissionDto);
+  @ResponseMessage('创建权限成功')
+  async createPermission(
+    @Body() data: CreatePermissionDto,
+  ): Promise<CreatePermissionResponse['data']> {
+    return await this.menusService.createPermission(data);
   }
 
   /**
    * 查询权限列表
    */
   @Get('permissions')
-  findAllPermissions(@Query('menuId') menuId?: string) {
-    return this.menusService.findAllPermissions(menuId ? +menuId : undefined);
+  @ResponseMessage('查询权限列表成功')
+  async findAllPermissions(
+    @Query('menuId') menuId?: string,
+  ): Promise<QueryPermissionListResponse['data']> {
+    const menuIdNum = menuId ? +menuId : undefined;
+    return this.menusService.findAllPermissions(menuIdNum);
   }
 
   /**
    * 查询单个权限
    */
   @Get('permissions/:id')
-  findOnePermission(@Param('id') id: string) {
+  @ResponseMessage('查询权限成功')
+  async findOnePermission(
+    @Param('id') id: string,
+  ): Promise<GetPermissionResponse['data']> {
     return this.menusService.findOnePermission(+id);
   }
 
@@ -91,18 +131,22 @@ export class MenusController {
    * 更新权限
    */
   @Patch('permissions/:id')
-  updatePermission(
+  @ResponseMessage('更新权限成功')
+  async updatePermission(
     @Param('id') id: string,
-    @Body() updatePermissionDto: UpdatePermissionDto,
-  ) {
-    return this.menusService.updatePermission(+id, updatePermissionDto);
+    @Body() data: UpdatePermissionDto,
+  ): Promise<UpdatePermissionResponse['data']> {
+    return await this.menusService.updatePermission(+id, data);
   }
 
   /**
    * 删除权限
    */
   @Delete('permissions/:id')
-  removePermission(@Param('id') id: string) {
-    return this.menusService.removePermission(+id);
+  @ResponseMessage('删除权限成功')
+  async removePermission(
+    @Param('id') id: string,
+  ): Promise<DeletePermissionResponse['data']> {
+    return await this.menusService.removePermission(+id);
   }
 }

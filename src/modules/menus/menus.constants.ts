@@ -18,3 +18,12 @@ export const MENU_PATH_MAX_LENGTH = 32;
 export const MENU_ICON_MAX_LENGTH = 128;
 // 菜单布局最大长度
 export const MENU_LAYOUT_MAX_LENGTH = 16;
+
+// 权限键最小长度
+export const PERMISSION_KEY_MIN_LENGTH = 2;
+// 权限键最大长度
+export const PERMISSION_KEY_MAX_LENGTH = 32;
+// 权限名称最小长度
+export const PERMISSION_NAME_MIN_LENGTH = 2;
+// 权限名称最大长度
+export const PERMISSION_NAME_MAX_LENGTH = 16;
