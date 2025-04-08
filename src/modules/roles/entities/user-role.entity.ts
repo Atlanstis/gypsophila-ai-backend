@@ -9,13 +9,14 @@ import {
 import { TimeEntity } from 'src/common';
 
 import { User } from '../../users/entities/user.entity';
+import { IUserRoleEntity } from '../types/entity.types';
 import { Role } from './role.entity';
 
 /**
  * 用户角色关联实体
  */
 @Entity('user_roles')
-export class UserRole extends TimeEntity {
+export class UserRole extends TimeEntity implements IUserRoleEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 

@@ -6,7 +6,8 @@ import { RoleMenu } from '../../menus/entities/role-menu.entity';
 import {
   ROLE_DESCRIPTION_MAX_LENGTH,
   ROLE_NAME_MAX_LENGTH,
-} from '../constants';
+} from '../roles.constants';
+import { IRoleEntity } from '../types/entity.types';
 import { RolePermission } from './role-permission.entity';
 import { UserRole } from './user-role.entity';
 
@@ -14,7 +15,7 @@ import { UserRole } from './user-role.entity';
  * 角色实体
  */
 @Entity('roles')
-export class Role extends TimeEntity {
+export class Role extends TimeEntity implements IRoleEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 

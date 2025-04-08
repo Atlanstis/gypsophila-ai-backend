@@ -69,13 +69,6 @@ export interface PaginatedResponse<T> {
   /**
    * 每页数量
    * 每页显示的记录数
-   * @deprecated 使用 pageSize 替代
-   */
-  limit: number;
-
-  /**
-   * 每页数量
-   * 每页显示的记录数
    */
   pageSize: number;
 }

@@ -1,11 +1,7 @@
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { BusinessException } from 'src/common';
@@ -87,11 +83,14 @@ export class UsersService {
    * 查询用户列表
    */
   async findAll(query: QueryUserDto): Promise<QueryUserListResponse['data']> {
-    const { username, nickname, pageSize, page, sortBy, sortOrder } = query;
-
-    // 根据新旧参数确定实际分页参数
-    const actualPage = page ?? 1;
-    const actualPageSize = pageSize ?? 10;
+    const {
+      username,
+      nickname,
+      pageSize = 10,
+      page = 1,
+      sortBy,
+      sortOrder,
+    } = query;
 
     // 构建查询条件
     const queryBuilder = this.userRepository.createQueryBuilder('user');
@@ -122,17 +121,16 @@ export class UsersService {
 
     // 分页查询
     const items = await queryBuilder
-      .skip((actualPage - 1) * actualPageSize)
-      .take(actualPageSize)
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
       .getMany();
 
     // 返回分页数据
     return {
       items,
       total,
-      page: actualPage,
-      pageSize: actualPageSize,
-      limit: actualPageSize,
+      page,
+      pageSize,
     };
   }
 
@@ -146,7 +144,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`用户ID ${id} 不存在`);
+      throw new BusinessException(`用户ID ${id} 不存在`);
     }
 
     return user;
@@ -162,7 +160,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`用户ID ${id} 不存在`);
+      throw new BusinessException(`用户ID ${id} 不存在`);
     }
 
     // 如果更新登录用户名，检查是否已存在
@@ -171,7 +169,7 @@ export class UsersService {
         where: { username: updateUserDto.username },
       });
       if (existingUser) {
-        throw new BadRequestException(
+        throw new BusinessException(
           `登录用户名 ${updateUserDto.username} 已存在`,
         );
       }
@@ -224,7 +222,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`用户ID ${id} 不存在`);
+      throw new BusinessException(`用户ID ${id} 不存在`);
     }
 
     // 检查是否为内置用户

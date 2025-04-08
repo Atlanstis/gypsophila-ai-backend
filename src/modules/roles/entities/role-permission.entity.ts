@@ -9,13 +9,17 @@ import {
 import { TimeEntity } from 'src/common';
 
 import { Permission } from '../../menus/entities/permission.entity';
+import { IRolePermissionEntity } from '../types/entity.types';
 import { Role } from './role.entity';
 
 /**
  * 角色权限关联实体
  */
 @Entity('role_permissions')
-export class RolePermission extends TimeEntity {
+export class RolePermission
+  extends TimeEntity
+  implements IRolePermissionEntity
+{
   @PrimaryGeneratedColumn('increment')
   id: number;
 

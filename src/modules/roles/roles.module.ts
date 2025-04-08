@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { DatabaseModule } from '../../database/database.module';
-import { RolePermission } from './entities/role-permission.entity';
-import { Role } from './entities/role.entity';
-import { UserRole } from './entities/user-role.entity';
+import { DatabaseModule } from 'src/database/database.module';
+
+import { Role, RolePermission, UserRole } from './entities';
 import { RolesController } from './roles.controller';
 import { RolesService } from './roles.service';
 
