@@ -8,8 +8,7 @@ export type AuthErrorCode =
   | StatusCode.ACCESS_TOKEN_EXPIRED
   | StatusCode.ACCESS_TOKEN_INVALID
   | StatusCode.REFRESH_TOKEN_EXPIRED
-  | StatusCode.REFRESH_TOKEN_INVALID
-  | StatusCode.USER_NOT_FOUND;
+  | StatusCode.REFRESH_TOKEN_INVALID;
 
 /**
  * 授权异常类

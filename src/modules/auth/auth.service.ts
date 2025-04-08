@@ -40,10 +40,7 @@ export class AuthService {
       where: { username: loginDto.username },
     });
 
-    const error = new BusinessException(
-      '用户名或密码错误',
-      StatusCode.PASSWORD_ERROR,
-    );
+    const error = new BusinessException('用户名或密码错误');
 
     if (!user) {
       throw error;
