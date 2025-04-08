@@ -1,5 +1,8 @@
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
+import { ValidationMessageHelper as VMH } from 'src/common/helpers/validation-message.helper';
+
+import { IUpdateUserDto } from '../types/dto.types';
 import {
   NICKNAME_MAX_LENGTH,
   NICKNAME_MIN_LENGTH,
@@ -11,28 +14,46 @@ import {
 /**
  * 更新用户DTO
  */
-export class UpdateUserDto {
-  @IsString()
-  @Length(0, USER_AVATAR_MAX_LENGTH)
+export class UpdateUserDto implements IUpdateUserDto {
+  /**
+   * 用户头像
+   */
+  @Length(0, USER_AVATAR_MAX_LENGTH, {
+    message: VMH.string.length(0, USER_AVATAR_MAX_LENGTH, '用户头像'),
+  })
+  @IsString({ message: VMH.string.isString('用户头像') })
   @IsOptional()
   avatar?: string;
 
-  @IsString()
-  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH)
+  /**
+   * 用户名
+   */
+  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, {
+    message: VMH.string.length(
+      USERNAME_MIN_LENGTH,
+      USERNAME_MAX_LENGTH,
+      '用户名',
+    ),
+  })
+  @IsString({ message: VMH.string.isString('用户名') })
   @IsOptional()
   username?: string;
 
-  @IsString()
-  @Length(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH)
+  /**
+   * 用户昵称
+   */
+  @Length(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH, {
+    message: VMH.string.length(
+      NICKNAME_MIN_LENGTH,
+      NICKNAME_MAX_LENGTH,
+      '用户昵称',
+    ),
+  })
+  @IsString({ message: VMH.string.isString('用户昵称') })
   @IsOptional()
   nickname?: string;
 
-  @IsBoolean()
+  @IsString({ message: VMH.string.isString('密码') })
   @IsOptional()
-  isBuiltin?: boolean;
-
-  @IsOptional()
-  @IsString()
-  @Length(6, 100)
   password?: string;
 }

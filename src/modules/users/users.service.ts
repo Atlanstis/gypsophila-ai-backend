@@ -8,13 +8,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { TransactionService } from '../../database/transaction.service';
+import { BusinessException } from 'src/common';
+import { TransactionService } from 'src/database/transaction.service';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserAuth } from './entities/user-auth.entity';
-import { AuthType } from './entities/user-auth.entity';
-import { User } from './entities/user.entity';
+import { User, UserAuth } from './entities';
+import { AuthType, QueryUserListResponse } from './types';
 
 /**
  * 用户服务
@@ -28,39 +29,49 @@ export class UsersService {
   ) {}
 
   /**
+   * 生成密码哈希
+   * @param password 明文密码
+   * @returns 哈希后的密码
+   */
+  private async hashPassword(password: string): Promise<string> {
+    return argon2.hash(password, {
+      type: 2, // argon2id
+      memoryCost: 2 ** 16,
+      timeCost: 3,
+      parallelism: 4,
+    });
+  }
+
+  /**
    * 创建用户
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<void> {
     // 检查登录用户名是否存在
     const existingUserByUsername = await this.userRepository.findOne({
       where: { username: createUserDto.username },
     });
     if (existingUserByUsername) {
-      throw new BadRequestException(
+      throw new BusinessException(
         `登录用户名 ${createUserDto.username} 已存在`,
       );
     }
 
     // 使用事务执行用户创建
-    return this.transactionService.executeTransaction(async (manager) => {
+    await this.transactionService.executeTransaction(async (manager) => {
       // 创建用户
       const user = manager.create(User, {
         username: createUserDto.username,
         nickname: createUserDto.nickname,
         avatar: createUserDto.avatar,
-        isBuiltin: createUserDto.isBuiltin || false,
+        isBuiltin: false,
       });
 
       // 保存用户信息
       const savedUser = await manager.save(user);
 
       // 创建用户认证信息
-      const passwordHash = await argon2.hash(createUserDto.password, {
-        type: argon2.argon2id,
-        memoryCost: 2 ** 16,
-        timeCost: 3,
-        parallelism: 4,
-      });
+      const passwordHash = await this.hashPassword(createUserDto.password);
+
       const userAuth = manager.create(UserAuth, {
         userId: savedUser.id,
         authType: AuthType.PASSWORD,
@@ -69,18 +80,18 @@ export class UsersService {
 
       // 保存用户认证信息
       await manager.save(userAuth);
-
-      return savedUser;
     });
   }
 
   /**
    * 查询用户列表
    */
-  async findAll(
-    query: QueryUserDto,
-  ): Promise<{ total: number; items: User[] }> {
-    const { username, nickname, isBuiltin, pageSize = 10, current = 1 } = query;
+  async findAll(query: QueryUserDto): Promise<QueryUserListResponse['data']> {
+    const { username, nickname, pageSize, page, sortBy, sortOrder } = query;
+
+    // 根据新旧参数确定实际分页参数
+    const actualPage = page ?? 1;
+    const actualPageSize = pageSize ?? 10;
 
     // 构建查询条件
     const queryBuilder = this.userRepository.createQueryBuilder('user');
@@ -98,8 +109,12 @@ export class UsersService {
       });
     }
 
-    if (isBuiltin !== undefined) {
-      queryBuilder.andWhere('user.isBuiltin = :isBuiltin', { isBuiltin });
+    // 排序
+    if (sortBy) {
+      const order = sortOrder || 'DESC';
+      queryBuilder.orderBy(`user.${sortBy}`, order);
+    } else {
+      queryBuilder.orderBy('user.id', 'DESC');
     }
 
     // 计算总数
@@ -107,12 +122,18 @@ export class UsersService {
 
     // 分页查询
     const items = await queryBuilder
-      .orderBy('user.id', 'DESC')
-      .skip((current - 1) * pageSize)
-      .take(pageSize)
+      .skip((actualPage - 1) * actualPageSize)
+      .take(actualPageSize)
       .getMany();
 
-    return { total, items };
+    // 返回分页数据
+    return {
+      items,
+      total,
+      page: actualPage,
+      pageSize: actualPageSize,
+      limit: actualPageSize,
+    };
   }
 
   /**
@@ -134,8 +155,15 @@ export class UsersService {
   /**
    * 更新用户
    */
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['auths', 'userRoles', 'userRoles.role'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`用户ID ${id} 不存在`);
+    }
 
     // 如果更新登录用户名，检查是否已存在
     if (updateUserDto.username && updateUserDto.username !== user.username) {
@@ -150,14 +178,12 @@ export class UsersService {
     }
 
     // 使用事务执行用户更新
-    return this.transactionService.executeTransaction(async (manager) => {
+    await this.transactionService.executeTransaction(async (manager) => {
       // 更新用户基本信息
       if (updateUserDto.username) user.username = updateUserDto.username;
       if (updateUserDto.nickname) user.nickname = updateUserDto.nickname;
       if (updateUserDto.avatar !== undefined)
         user.avatar = updateUserDto.avatar;
-      if (updateUserDto.isBuiltin !== undefined)
-        user.isBuiltin = updateUserDto.isBuiltin;
 
       // 保存用户信息
       await manager.save(user);
@@ -170,12 +196,7 @@ export class UsersService {
         });
 
         // 生成密码哈希
-        const passwordHash = await argon2.hash(updateUserDto.password, {
-          type: argon2.argon2id,
-          memoryCost: 2 ** 16,
-          timeCost: 3,
-          parallelism: 4,
-        });
+        const passwordHash = await this.hashPassword(updateUserDto.password);
 
         if (auth) {
           // 更新密码
@@ -191,12 +212,6 @@ export class UsersService {
           await manager.save(userAuth);
         }
       }
-
-      // 重新查询用户信息
-      return manager.findOne(User, {
-        where: { id },
-        relations: ['auths', 'userRoles', 'userRoles.role'],
-      });
     });
   }
 
@@ -204,11 +219,17 @@ export class UsersService {
    * 删除用户
    */
   async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`用户ID ${id} 不存在`);
+    }
 
     // 检查是否为内置用户
     if (user.isBuiltin) {
-      throw new BadRequestException('不能删除内置用户');
+      throw new BusinessException('不能删除内置用户');
     }
 
     // 使用事务执行用户删除

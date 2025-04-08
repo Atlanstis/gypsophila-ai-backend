@@ -45,25 +45,37 @@ export interface ApiResponse<T = any> {
 
 /**
  * 分页响应接口
+ * 标准分页接口的响应数据结构
  */
 export interface PaginatedResponse<T> {
   /**
    * 数据项列表
+   * 当前页的数据记录
    */
   items: T[];
 
   /**
    * 总数据量
+   * 符合查询条件的总记录数
    */
   total: number;
 
   /**
    * 页码
+   * 当前页码，从1开始
    */
   page: number;
 
   /**
    * 每页数量
+   * 每页显示的记录数
+   * @deprecated 使用 pageSize 替代
    */
   limit: number;
+
+  /**
+   * 每页数量
+   * 每页显示的记录数
+   */
+  pageSize: number;
 }

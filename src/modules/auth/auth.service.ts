@@ -10,8 +10,8 @@ import { ConfigService } from 'src/config/config.service';
 import { AuthRedisKey } from 'src/redis/redis-key.constant';
 import { RedisService } from 'src/redis/redis.service';
 
-import { AuthType, UserAuth } from '../users/entities/user-auth.entity';
-import { User } from '../users/entities/user.entity';
+import { User, UserAuth } from '../users/entities';
+import { AuthType } from '../users/types';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload, TokenPair } from './types/business.types';
 

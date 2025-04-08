@@ -8,20 +8,14 @@ import {
 
 import { TimeEntity } from 'src/common';
 
+import { AuthType, IUserAuthEntity } from '../types/entity.types';
 import { User } from './user.entity';
-
-/**
- * 用户认证方式
- */
-export enum AuthType {
-  PASSWORD = 'password',
-}
 
 /**
  * 用户认证实体
  */
 @Entity('user_auths')
-export class UserAuth extends TimeEntity {
+export class UserAuth extends TimeEntity implements IUserAuthEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -44,5 +38,5 @@ export class UserAuth extends TimeEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user?: User;
 }

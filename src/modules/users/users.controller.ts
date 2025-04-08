@@ -9,9 +9,18 @@ import {
   Query,
 } from '@nestjs/common';
 
+import { ResponseMessage } from 'src/common';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  CreateUserResponse,
+  DeleteUserResponse,
+  QueryUserDetailResponse,
+  QueryUserListResponse,
+  UpdateUserResponse,
+} from './types/api.types';
 import { UsersService } from './users.service';
 
 /**
@@ -25,15 +34,22 @@ export class UsersController {
    * 创建用户
    */
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ResponseMessage('创建用户成功')
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<CreateUserResponse['data']> {
+    await this.usersService.create(createUserDto);
+    return null;
   }
 
   /**
    * 查询用户列表
    */
   @Get()
-  findAll(@Query() query: QueryUserDto) {
+  @ResponseMessage('查询用户列表成功')
+  async findAll(
+    @Query() query: QueryUserDto,
+  ): Promise<QueryUserListResponse['data']> {
     return this.usersService.findAll(query);
   }
 
@@ -41,7 +57,10 @@ export class UsersController {
    * 查询单个用户
    */
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @ResponseMessage('查询用户详情成功')
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<QueryUserDetailResponse['data']> {
     return this.usersService.findOne(id);
   }
 
@@ -49,15 +68,22 @@ export class UsersController {
    * 更新用户
    */
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  @ResponseMessage('更新用户成功')
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserResponse['data']> {
+    await this.usersService.update(id, updateUserDto);
+    return null;
   }
 
   /**
    * 删除用户
    */
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @ResponseMessage('删除用户成功')
+  async remove(@Param('id') id: string): Promise<DeleteUserResponse['data']> {
+    await this.usersService.remove(id);
+    return null;
   }
 }

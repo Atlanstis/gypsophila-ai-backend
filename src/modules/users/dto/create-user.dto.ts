@@ -1,16 +1,11 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 
+import { ValidationMessageHelper as VMH } from 'src/common';
+
+import { ICreateUserDto } from '../types/dto.types';
 import {
   NICKNAME_MAX_LENGTH,
   NICKNAME_MIN_LENGTH,
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   USER_AVATAR_MAX_LENGTH,
@@ -19,30 +14,49 @@ import {
 /**
  * 创建用户DTO
  */
-export class CreateUserDto {
-  @IsString()
-  @Length(0, USER_AVATAR_MAX_LENGTH)
+export class CreateUserDto implements ICreateUserDto {
+  /**
+   * 用户头像
+   */
+  @Length(0, USER_AVATAR_MAX_LENGTH, {
+    message: VMH.string.length(0, USER_AVATAR_MAX_LENGTH, '用户头像'),
+  })
+  @IsString({ message: VMH.string.isString('用户头像') })
   @IsOptional()
   avatar?: string;
 
+  /**
+   * 用户名
+   */
   @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, {
-    message: `username 长度应在 ${USERNAME_MIN_LENGTH} 到 ${USERNAME_MAX_LENGTH} 之间`,
+    message: VMH.string.length(
+      USERNAME_MIN_LENGTH,
+      USERNAME_MAX_LENGTH,
+      '用户名',
+    ),
   })
-  @IsString({ message: 'username 必须是字符串' })
-  @IsNotEmpty({ message: 'username 不能为空' })
+  @IsString({ message: VMH.string.isString('用户名') })
+  @IsNotEmpty({ message: VMH.common.isNotEmpty('用户名') })
   username: string;
 
-  @Length(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH)
-  @IsString()
-  @IsNotEmpty()
+  /**
+   * 用户昵称
+   */
+  @Length(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH, {
+    message: VMH.string.length(
+      NICKNAME_MIN_LENGTH,
+      NICKNAME_MAX_LENGTH,
+      '用户昵称',
+    ),
+  })
+  @IsString({ message: VMH.string.isString('用户昵称') })
+  @IsNotEmpty({ message: VMH.common.isNotEmpty('用户昵称') })
   nickname: string;
 
-  @IsBoolean()
-  @IsOptional()
-  isBuiltin?: boolean;
-
-  @IsString()
-  @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
-  @IsNotEmpty()
+  /**
+   * 用户密码
+   */
+  @IsString({ message: VMH.string.isString('密码') })
+  @IsNotEmpty({ message: VMH.common.isNotEmpty('密码') })
   password: string;
 }

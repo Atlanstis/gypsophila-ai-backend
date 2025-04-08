@@ -12,7 +12,3 @@ export const USERNAME_MAX_LENGTH = 16;
 export const NICKNAME_MIN_LENGTH = 2;
 // 用户名称最大长度
 export const NICKNAME_MAX_LENGTH = 8;
-// 密码最小长度
-export const PASSWORD_MIN_LENGTH = 6;
-// 密码最大长度
-export const PASSWORD_MAX_LENGTH = 100;

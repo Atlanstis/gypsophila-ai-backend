@@ -3,6 +3,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TimeEntity } from 'src/common';
 
 import { UserRole } from '../../roles/entities/user-role.entity';
+import { IUserEntity } from '../types/entity.types';
 import {
   NICKNAME_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
@@ -14,7 +15,7 @@ import { UserAuth } from './user-auth.entity';
  * 用户实体
  */
 @Entity('users')
-export class User extends TimeEntity {
+export class User extends TimeEntity implements IUserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,8 +32,8 @@ export class User extends TimeEntity {
   isBuiltin: boolean;
 
   @OneToMany(() => UserAuth, (userAuth) => userAuth.user)
-  auths: UserAuth[];
+  auths?: UserAuth[];
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
-  userRoles: UserRole[];
+  userRoles?: UserRole[];
 }
