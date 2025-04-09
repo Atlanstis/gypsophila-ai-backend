@@ -162,7 +162,6 @@ ResponseHelper.error(statusCode, message, request, error);
 配置文件位于项目根目录的 `config` 文件夹中：
 
 - `app.yaml` - 开发环境配置
-- `app.test.yaml` - 测试环境配置
 - `app.production.yaml` - 生产环境配置
 
 系统会根据 `NODE_ENV` 环境变量自动选择相应的配置文件。
@@ -525,9 +524,6 @@ pnpm install
 ```bash
 # 开发环境（默认）
 pnpm start:dev
-
-# 测试环境
-pnpm start:test
 
 # 生产环境构建
 pnpm build:production

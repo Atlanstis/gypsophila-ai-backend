@@ -5,7 +5,7 @@ import * as Joi from 'joi';
  */
 export const appConfigSchema = Joi.object({
   name: Joi.string().required(),
-  env: Joi.string().valid('development', 'test', 'production').required(),
+  env: Joi.string().valid('development', 'production').required(),
   port: Joi.number().port().default(3000),
   prefix: Joi.string().default('/api'),
 });
