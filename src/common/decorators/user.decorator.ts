@@ -25,7 +25,7 @@ export const CurrentUser = createParamDecorator<
   const user = request.user as ICurrentUser;
 
   if (!user) {
-    throw new AuthException('未认证的请求', StatusCode.UNAUTHORIZED);
+    throw new AuthException('该接口未经 JWT 守卫认证', StatusCode.UNAUTHORIZED);
   }
 
   // 如果指定了data，则返回用户对象的特定字段
