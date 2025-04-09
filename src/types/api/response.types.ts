@@ -6,7 +6,7 @@
  * 通用响应接口
  * 定义API响应的标准格式
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   /**
    * 响应状态码
    * 格式：XXXYYY，其中：

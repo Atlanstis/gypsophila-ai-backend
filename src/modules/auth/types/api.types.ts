@@ -43,7 +43,7 @@ export type GetUserInfoResponse = ApiResponse<CurrentUser>;
 /**
  * 登出响应类型
  */
-export type LogoutResponse = ApiResponse;
+export type LogoutResponse = ApiResponse<void>;
 
 /**
  * 认证接口定义

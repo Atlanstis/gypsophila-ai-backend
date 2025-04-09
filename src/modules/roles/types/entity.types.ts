@@ -1,6 +1,8 @@
 /**
  * 角色模块实体类型定义
  */
+import { IPermissionEntity, IRoleMenuEntity } from 'src/modules/menus/types';
+import { IUserEntity } from 'src/modules/users/types';
 
 /**
  * 角色实体接口
@@ -44,7 +46,7 @@ export interface IRoleEntity {
   /**
    * 角色关联的菜单
    */
-  roleMenus?: any[];
+  roleMenus?: IRoleMenuEntity[];
 
   /**
    * 角色关联的权限
@@ -89,7 +91,7 @@ export interface IRolePermissionEntity {
   /**
    * 关联的权限
    */
-  permission?: any;
+  permission?: IPermissionEntity;
 }
 
 /**
@@ -124,7 +126,7 @@ export interface IUserRoleEntity {
   /**
    * 关联的用户
    */
-  user?: any;
+  user?: IUserEntity;
 
   /**
    * 关联的角色

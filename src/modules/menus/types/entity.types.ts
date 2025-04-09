@@ -2,8 +2,7 @@
  * 菜单模块实体类型定义
  */
 import { TimeEntity } from 'src/common';
-
-import { Role, RolePermission } from '../../roles/entities';
+import { IRoleEntity, IRolePermissionEntity } from 'src/modules/roles/types';
 
 /**
  * 菜单类型
@@ -87,22 +86,22 @@ export interface IMenuEntity extends TimeEntity {
   /**
    * 父级菜单
    */
-  parent: IMenuEntity;
+  parent?: IMenuEntity;
 
   /**
    * 子菜单
    */
-  children: IMenuEntity[];
+  children?: IMenuEntity[];
 
   /**
    * 菜单权限
    */
-  permissions: IPermissionEntity[];
+  permissions?: IPermissionEntity[];
 
   /**
    * 角色菜单关联
    */
-  roleMenus: IRoleMenuEntity[];
+  roleMenus?: IRoleMenuEntity[];
 }
 
 /**
@@ -132,12 +131,12 @@ export interface IPermissionEntity extends TimeEntity {
   /**
    * 所属菜单
    */
-  menu: IMenuEntity;
+  menu?: IMenuEntity;
 
   /**
    * 角色权限关联
    */
-  rolePermissions: RolePermission[];
+  rolePermissions?: IRolePermissionEntity[];
 }
 
 /**
@@ -162,10 +161,10 @@ export interface IRoleMenuEntity extends TimeEntity {
   /**
    * 角色
    */
-  role: Role;
+  role?: IRoleEntity;
 
   /**
    * 菜单
    */
-  menu: IMenuEntity;
+  menu?: IMenuEntity;
 }

@@ -1,6 +1,7 @@
 /**
  * 用户模块实体类型定义
  */
+import { IUserRoleEntity } from 'src/modules/roles/types';
 
 /**
  * 用户实体接口
@@ -49,7 +50,7 @@ export interface IUserEntity {
   /**
    * 用户角色关联
    */
-  userRoles?: any[];
+  userRoles?: IUserRoleEntity[];
 }
 
 /**
