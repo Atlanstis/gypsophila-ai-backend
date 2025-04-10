@@ -19,7 +19,6 @@ export class UuidValidationPipeFactory {
     customOptions?: Partial<ParseUUIDPipeOptions>,
   ): ParseUUIDPipe {
     const options: ParseUUIDPipeOptions = {
-      errorHttpStatusCode: 400,
       exceptionFactory: () =>
         new BusinessException(
           `${property}格式错误，应为有效的UUID格式`,
