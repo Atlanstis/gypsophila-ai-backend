@@ -56,7 +56,7 @@
   "data": {
     // 响应数据
   },
-  "path": "/api/users",
+  "path": "/users",
   "timestamp": 1672574400000
 }
 ```
@@ -82,7 +82,7 @@
     "name": "管理员",
     "createdAt": "2023-01-01T12:00:00.000Z"
   },
-  "path": "/api/users/1",
+  "path": "/users/1",
   "timestamp": 1672574400
 }
 ```
@@ -94,7 +94,7 @@
   "code": 401000,
   "message": "未授权，请先登录",
   "data": null,
-  "path": "/api/users",
+  "path": "/users",
   "timestamp": 1672574400
 }
 ```
@@ -131,7 +131,7 @@
 
 ### 认证方式
 
-API 采用 JWT 认证，除登录接口外，所有请求需要在请求头中包含 `Authorization` 字段：
+API 采用 JWT 认证，需认证后访问的接口，请求需要在请求头中包含 `Authorization` 字段：
 
 ```
 Authorization: Bearer <token>
@@ -168,7 +168,7 @@ Authorization: Bearer <token>
     "page": 1,
     "pageSize": 10
   },
-  "path": "/api/users",
+  "path": "/users",
   "timestamp": 1672574400
 }
 ```
@@ -178,3 +178,141 @@ Authorization: Bearer <token>
 - `total`: 总数据量，符合查询条件的总记录数
 - `page`: 当前页码，从1开始
 - `pageSize`: 每页数量，每页显示的记录数
+
+### 接口文档书写模板
+
+在编写新的接口文档时，请参考以下模板格式：
+
+## 接口名称
+
+> 简要描述接口的主要功能和用途
+
+### 基本信息
+
+- **接口URL**: `/资源路径`
+- **请求方式**: `GET|POST|PATCH|DELETE`
+- **认证要求**: 是/否
+  - 是：使用 `JwtAuthGuard` 进行JWT认证
+- **权限要求**: 无 或 指定所需权限
+
+### 请求参数
+
+#### 路径参数
+
+| 参数名 | 类型   | 是否必须 | 描述         |
+| ------ | ------ | -------- | ------------ |
+| id     | number | 是       | 资源唯一标识 |
+
+#### 查询参数
+
+| 参数名     | 类型   | 是否必须 | 描述                   |
+| ---------- | ------ | -------- | ---------------------- |
+| keyword    | string | 否       | 搜索关键词             |
+| status     | string | 否       | 状态过滤               |
+| ... 分页参数 | ...    | ...      | 参考通用分页查询参数   |
+
+#### 请求体 (JSON)
+
+```json
+{
+  "field1": "值1",
+  "field2": "值2",
+  "nestedObject": {
+    "subField1": "子值1"
+  },
+  "arrayField": ["项1", "项2"]
+}
+```
+
+| 字段名       | 类型    | 是否必须 | 描述                           | 示例值           |
+| ------------ | ------- | -------- | ------------------------------ | ---------------- |
+| field1       | string  | 是       | 字段1的描述                    | "值1"            |
+| field2       | string  | 否       | 字段2的描述                    | "值2"            |
+| nestedObject | object  | 否       | 嵌套对象描述                   | { "subField1": "子值1" } |
+| arrayField   | array   | 否       | 数组字段描述                   | ["项1", "项2"]   |
+
+### 响应数据
+
+#### 成功响应
+
+状态码: `200000`
+
+```json
+{
+  "code": 200000,
+  "message": "操作成功",
+  "data": {
+    "id": 1,
+    "field1": "值1",
+    "field2": "值2",
+    "createdAt": "2023-01-01T12:00:00.000Z",
+    "updatedAt": "2023-01-01T12:00:00.000Z"
+  },
+  "path": "/资源路径",
+  "timestamp": 1672574400
+}
+```
+
+##### 响应字段说明
+
+| 字段名    | 类型   | 描述                   |
+| --------- | ------ | ---------------------- |
+| id        | number | 资源唯一标识           |
+| field1    | string | 字段1的描述            |
+| field2    | string | 字段2的描述            |
+| createdAt | string | 创建时间 (ISO格式)     |
+| updatedAt | string | 最后更新时间 (ISO格式) |
+
+#### 错误响应
+
+可能的错误状态码：`400000`, `401000`, `404000`, `422000`
+
+```json
+{
+  "code": 404000,
+  "message": "未找到指定资源",
+  "data": null,
+  "path": "/资源路径/999",
+  "timestamp": 1672574400
+}
+```
+
+### 示例
+
+#### 请求示例
+
+```bash
+# 使用 curl 发送请求
+curl -X POST \
+  "https://api.example.com/资源路径" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "field1": "值1",
+    "field2": "值2"
+  }'
+```
+
+#### 响应示例
+
+```json
+{
+  "code": 200000,
+  "message": "操作成功",
+  "data": {
+    "id": 1,
+    "field1": "值1",
+    "field2": "值2",
+    "createdAt": "2023-01-01T12:00:00.000Z",
+    "updatedAt": "2023-01-01T12:00:00.000Z"
+  },
+  "path": "/资源路径",
+  "timestamp": 1672574400
+}
+```
+
+### 注意事项
+
+- 该接口的特殊注意事项
+- 可能的业务限制条件
+- 与其他接口的关联关系
