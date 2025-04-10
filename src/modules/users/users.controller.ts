@@ -7,9 +7,11 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
-import { ResponseMessage } from 'src/common';
+import { DecryptField, JwtAuthGuard, ResponseMessage } from 'src/common';
+import { UuidValidationPipeFactory as UuidValidationPipe } from 'src/common';
 
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from './dto';
 import {
@@ -25,6 +27,7 @@ import { UsersService } from './users.service';
  * 用户控制器
  */
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -32,12 +35,11 @@ export class UsersController {
    * 创建用户
    */
   @Post()
-  @ResponseMessage('创建用户成功')
+  @ResponseMessage('用户创建成功')
   async create(
-    @Body() createUserDto: CreateUserDto,
+    @Body(DecryptField('password')) createUserDto: CreateUserDto,
   ): Promise<CreateUserResponse['data']> {
-    await this.usersService.create(createUserDto);
-    return null;
+    return await this.usersService.create(createUserDto);
   }
 
   /**
@@ -57,7 +59,7 @@ export class UsersController {
   @Get(':id')
   @ResponseMessage('查询用户详情成功')
   async findOne(
-    @Param('id') id: string,
+    @Param('id', UuidValidationPipe.create('用户ID')) id: string,
   ): Promise<QueryUserDetailResponse['data']> {
     return this.usersService.findOne(id);
   }
@@ -66,13 +68,12 @@ export class UsersController {
    * 更新用户
    */
   @Patch(':id')
-  @ResponseMessage('更新用户成功')
+  @ResponseMessage('用户更新成功')
   async update(
-    @Param('id') id: string,
+    @Param('id', UuidValidationPipe.create('用户ID')) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateUserResponse['data']> {
-    await this.usersService.update(id, updateUserDto);
-    return null;
+    return await this.usersService.update(id, updateUserDto);
   }
 
   /**
@@ -80,8 +81,9 @@ export class UsersController {
    */
   @Delete(':id')
   @ResponseMessage('删除用户成功')
-  async remove(@Param('id') id: string): Promise<DeleteUserResponse['data']> {
-    await this.usersService.remove(id);
-    return null;
+  async remove(
+    @Param('id', UuidValidationPipe.create('用户ID')) id: string,
+  ): Promise<DeleteUserResponse['data']> {
+    return await this.usersService.remove(id);
   }
 }

@@ -57,7 +57,7 @@ export class UsersService {
         username: createUserDto.username,
         nickname: createUserDto.nickname,
         avatar: createUserDto.avatar,
-        isBuiltin: false,
+        isBuiltin: false, // 无法创建内置用户
       });
 
       // 保存用户信息
@@ -111,7 +111,7 @@ export class UsersService {
       const order = sortOrder || 'DESC';
       queryBuilder.orderBy(`user.${sortBy}`, order);
     } else {
-      queryBuilder.orderBy('user.id', 'DESC');
+      queryBuilder.orderBy('user.createdAt', 'ASC');
     }
 
     // 计算总数
@@ -138,7 +138,6 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['auths', 'userRoles', 'userRoles.role'],
     });
 
     if (!user) {
@@ -152,63 +151,26 @@ export class UsersService {
    * 更新用户
    */
   async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
+    // 查找用户
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['auths', 'userRoles', 'userRoles.role'],
     });
 
     if (!user) {
       throw new BusinessException(`用户ID ${id} 不存在`);
     }
 
-    // 如果更新登录用户名，检查是否已存在
-    if (updateUserDto.username && updateUserDto.username !== user.username) {
-      const existingUser = await this.userRepository.findOne({
-        where: { username: updateUserDto.username },
-      });
-      if (existingUser) {
-        throw new BusinessException(
-          `登录用户名 ${updateUserDto.username} 已存在`,
-        );
-      }
+    // 检查是否为内置用户
+    if (user.isBuiltin) {
+      throw new BusinessException('不能修改内置用户');
     }
 
-    // 使用事务执行用户更新
-    await this.transactionService.executeTransaction(async (manager) => {
-      // 更新用户基本信息
-      if (updateUserDto.username) user.username = updateUserDto.username;
-      if (updateUserDto.nickname) user.nickname = updateUserDto.nickname;
-      if (updateUserDto.avatar !== undefined)
-        user.avatar = updateUserDto.avatar;
+    // 更新用户基本信息
+    if (updateUserDto.nickname) user.nickname = updateUserDto.nickname;
+    if (updateUserDto.avatar !== undefined) user.avatar = updateUserDto.avatar;
 
-      // 保存用户信息
-      await manager.save(user);
-
-      // 如果需要更新密码
-      if (updateUserDto.password) {
-        // 查找用户的密码认证信息
-        const auth = await manager.findOne(UserAuth, {
-          where: { userId: user.id, authType: AuthType.PASSWORD },
-        });
-
-        // 生成密码哈希
-        const passwordHash = await this.hashPassword(updateUserDto.password);
-
-        if (auth) {
-          // 更新密码
-          auth.authData = passwordHash;
-          await manager.save(auth);
-        } else {
-          // 如果没有密码认证信息，创建一个
-          const userAuth = manager.create(UserAuth, {
-            userId: user.id,
-            authType: AuthType.PASSWORD,
-            authData: passwordHash,
-          });
-          await manager.save(userAuth);
-        }
-      }
-    });
+    // 保存用户信息
+    await this.userRepository.save(user);
   }
 
   /**

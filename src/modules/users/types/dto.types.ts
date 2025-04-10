@@ -38,19 +38,9 @@ export interface IUpdateUserDto {
   avatar?: string;
 
   /**
-   * 用户名
-   */
-  username?: string;
-
-  /**
    * 用户昵称
    */
   nickname?: string;
-
-  /**
-   * 用户密码
-   */
-  password?: string;
 }
 
 /**

@@ -68,7 +68,7 @@
 - `path`: 请求路径
 - `timestamp`: 响应时间戳（Unix 秒时间戳）
 
-### 成功与错误响应
+### 成功响应
 
 #### 成功响应示例
 
@@ -83,18 +83,6 @@
     "createdAt": "2023-01-01T12:00:00.000Z"
   },
   "path": "/users/1",
-  "timestamp": 1672574400
-}
-```
-
-#### 错误响应示例
-
-```json
-{
-  "code": 401000,
-  "message": "未授权，请先登录",
-  "data": null,
-  "path": "/users",
   "timestamp": 1672574400
 }
 ```
@@ -262,20 +250,6 @@ Authorization: Bearer <token>
 | field2    | string | 字段2的描述            |
 | createdAt | string | 创建时间 (ISO格式)     |
 | updatedAt | string | 最后更新时间 (ISO格式) |
-
-#### 错误响应
-
-可能的错误状态码：`400000`, `401000`, `404000`, `422000`
-
-```json
-{
-  "code": 404000,
-  "message": "未找到指定资源",
-  "data": null,
-  "path": "/资源路径/999",
-  "timestamp": 1672574400
-}
-```
 
 ### 示例
 

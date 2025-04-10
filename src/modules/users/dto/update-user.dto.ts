@@ -6,8 +6,6 @@ import { IUpdateUserDto } from '../types/dto.types';
 import {
   NICKNAME_MAX_LENGTH,
   NICKNAME_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  USERNAME_MIN_LENGTH,
   USER_AVATAR_MAX_LENGTH,
 } from '../users.constants';
 
@@ -26,20 +24,6 @@ export class UpdateUserDto implements IUpdateUserDto {
   avatar?: string;
 
   /**
-   * 用户名
-   */
-  @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, {
-    message: VMH.string.length(
-      USERNAME_MIN_LENGTH,
-      USERNAME_MAX_LENGTH,
-      '用户名',
-    ),
-  })
-  @IsString({ message: VMH.string.isString('用户名') })
-  @IsOptional()
-  username?: string;
-
-  /**
    * 用户昵称
    */
   @Length(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH, {
@@ -52,8 +36,4 @@ export class UpdateUserDto implements IUpdateUserDto {
   @IsString({ message: VMH.string.isString('用户昵称') })
   @IsOptional()
   nickname?: string;
-
-  @IsString({ message: VMH.string.isString('密码') })
-  @IsOptional()
-  password?: string;
 }
