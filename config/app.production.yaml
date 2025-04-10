@@ -26,8 +26,8 @@ redis:
 # JWT配置
 jwt:
   secret: aBLNGjz2ScqLbopS6rOf$I3RPCf#woD@
-  expiresIn: 15m
-  refreshExpiresIn: 7d
+  expiresIn: 5m
+  refreshExpiresIn: 30m
 
 # 日志配置
 logger:

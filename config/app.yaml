@@ -26,7 +26,7 @@ redis:
 # JWT配置
 jwt:
   secret: j+v22~tXkFPcYG*r5%Qi.4fRM(EAFF!G
-  expiresIn: 15m
+  expiresIn: 1d
   refreshExpiresIn: 7d
 
 # 日志配置
