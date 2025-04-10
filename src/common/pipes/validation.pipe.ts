@@ -15,7 +15,7 @@ export class ValidationPipeFactory {
     const options: ValidationPipeOptions = {
       transform: true, // 转换参数类型
       whitelist: true, // 去除未定义的属性
-      forbidNonWhitelisted: true, // 禁止未定义的属性
+      forbidNonWhitelisted: false, // 允许未定义的属性，不报错
       stopAtFirstError: true, // 遇到第一个错误时停止验证
       exceptionFactory: (errors) => {
         // 使用ValidationErrorHelper将验证错误转换为业务异常
