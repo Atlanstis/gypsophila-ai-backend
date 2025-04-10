@@ -181,6 +181,7 @@ Authorization: Bearer <token>
 - **请求方式**: `GET|POST|PATCH|DELETE`
 - **认证要求**: 是/否
   - 是：使用 `JwtAuthGuard` 进行JWT认证
+  - 否：无需认证
 - **权限要求**: 无 或 指定所需权限
 
 ### 请求参数
