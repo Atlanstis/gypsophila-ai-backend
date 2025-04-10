@@ -41,48 +41,55 @@ export class RsaService implements OnModuleInit {
   }
 
   /**
-   * 确保密钥对存在，如不存在则生成
+   * 确保 RSA 密钥对存在
+   * 如果不存在就生成新的密钥对
    */
   private async ensureKeyPairExists(): Promise<void> {
-    // 生产环境每次启动时都重新生成密钥对
-    if (this.isProduction) {
+    try {
+      // 检查目录是否存在
+      if (!fs.existsSync(this.keyPairPath)) {
+        await fs.promises.mkdir(this.keyPairPath, { recursive: true });
+      }
+
+      // 检查 Redis 中是否有密钥对
+      const publicKeyInRedis = await this.redisService.get(
+        AuthRedisKey.PUBLIC_KEY,
+      );
+      const privateKeyInRedis = await this.redisService.get(
+        AuthRedisKey.PRIVATE_KEY,
+      );
+
+      if (publicKeyInRedis && privateKeyInRedis) {
+        // Redis 中有密钥对，检查文件是否也存在
+        if (
+          !fs.existsSync(this.publicKeyPath) ||
+          !fs.existsSync(this.privateKeyPath)
+        ) {
+          // 文件不存在，从 Redis 恢复到文件
+          await this.saveKeysToFile(publicKeyInRedis, privateKeyInRedis);
+        }
+        return;
+      }
+
+      // 检查文件是否存在
+      if (
+        fs.existsSync(this.publicKeyPath) &&
+        fs.existsSync(this.privateKeyPath)
+      ) {
+        // 文件存在，加载到 Redis
+        const publicKey = fs.readFileSync(this.publicKeyPath, 'utf8');
+        const privateKey = fs.readFileSync(this.privateKeyPath, 'utf8');
+        await this.saveKeysToRedis(publicKey, privateKey);
+        return;
+      }
+
+      // 都不存在，生成新的密钥对
       const { publicKey, privateKey } = this.generateKeyPair();
-      await this.saveKeysToRedis(publicKey, privateKey);
       await this.saveKeysToFile(publicKey, privateKey);
-      return;
-    }
-
-    // 检查 Redis 中是否存在密钥对
-    const publicKeyInRedis = await this.redisService.get(
-      AuthRedisKey.PUBLIC_KEY,
-    );
-    const privateKeyInRedis = await this.redisService.get(
-      AuthRedisKey.PRIVATE_KEY,
-    );
-
-    // 非生产环境，先尝试从 Redis 获取
-    if (publicKeyInRedis && privateKeyInRedis) {
-      return;
-    }
-
-    // Redis 中不存在，检查文件
-    if (!fs.existsSync(this.keyPairPath)) {
-      fs.mkdirSync(this.keyPairPath, { recursive: true });
-    }
-
-    if (
-      fs.existsSync(this.publicKeyPath) &&
-      fs.existsSync(this.privateKeyPath)
-    ) {
-      // 文件存在，读取并存入 Redis
-      const publicKey = fs.readFileSync(this.publicKeyPath, 'utf8');
-      const privateKey = fs.readFileSync(this.privateKeyPath, 'utf8');
       await this.saveKeysToRedis(publicKey, privateKey);
-    } else {
-      // 文件不存在，生成新的密钥对
-      const { publicKey, privateKey } = this.generateKeyPair();
-      await this.saveKeysToRedis(publicKey, privateKey);
-      await this.saveKeysToFile(publicKey, privateKey);
+    } catch (error) {
+      console.error('初始化 RSA 密钥对时出错:', error);
+      throw new BusinessException('RSA 密钥初始化失败');
     }
   }
 
@@ -193,7 +200,7 @@ export class RsaService implements OnModuleInit {
 
       return decrypted.toString('utf8');
     } catch {
-      throw new BusinessException(`解密失败: ${fieldName}`);
+      throw new BusinessException(`加密字段 ${fieldName} 解密失败`);
     }
   }
 

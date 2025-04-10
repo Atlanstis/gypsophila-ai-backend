@@ -5,7 +5,7 @@ import {
   Type,
 } from '@nestjs/common';
 
-import { RsaService } from '../../modules/auth/rsa.service';
+import { RsaService } from 'src/rsa';
 
 /**
  * 解密字段配置类型

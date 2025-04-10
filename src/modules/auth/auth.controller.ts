@@ -7,10 +7,10 @@ import {
   JwtAuthGuard,
   ResponseMessage,
 } from 'src/common';
+import { RsaService } from 'src/rsa';
 
 import { AuthService } from './auth.service';
 import { LoginDto, RefreshTokenDto } from './dto';
-import { RsaService } from './rsa.service';
 import {
   GetPublicKeyResponse,
   GetUserInfoResponse,

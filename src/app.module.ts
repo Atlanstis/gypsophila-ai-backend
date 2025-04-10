@@ -17,6 +17,7 @@ import { MenusModule } from './modules/menus/menus.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { RedisModule } from './redis/redis.module';
+import { RsaModule } from './rsa/rsa.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RedisModule } from './redis/redis.module';
     LoggerModule,
     DatabaseModule,
     RedisModule,
+    RsaModule,
     UsersModule,
     RolesModule,
     MenusModule,
