@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 
 import { ValidationMessageHelper as VMH } from 'src/common';
 
@@ -28,6 +34,9 @@ export class CreateUserDto implements ICreateUserDto {
   /**
    * 用户名
    */
+  @Matches(/^[a-zA-Z][a-zA-Z0-9_]*$/, {
+    message: '用户名只能包含英文字母、数字和下划线，且必须以英文字母开头',
+  })
   @Length(USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, {
     message: VMH.string.length(
       USERNAME_MIN_LENGTH,
