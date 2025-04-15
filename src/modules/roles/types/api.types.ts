@@ -57,6 +57,11 @@ export type UpdateRoleResponse = ApiResponse<void>;
 export type DeleteRoleResponse = ApiResponse<void>;
 
 /**
+ * 查询非内置角色列表响应
+ */
+export type QueryNonBuiltinRolesResponse = ApiResponse<RoleListItem[]>;
+
+/**
  * 角色模块 API 接口定义
  */
 export interface RolesApi {
@@ -74,6 +79,11 @@ export interface RolesApi {
    * 查询单个角色
    */
   findOne(id: number): Promise<QueryRoleDetailResponse>;
+
+  /**
+   * 查询非内置角色列表
+   */
+  findNonBuiltinRoles(): Promise<QueryNonBuiltinRolesResponse>;
 
   /**
    * 更新角色

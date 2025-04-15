@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 import { ValidationMessageHelper as VMH } from 'src/common';
 
@@ -15,14 +15,6 @@ export class QueryRoleDto implements IQueryRoleDto {
   @IsString({ message: VMH.string.isString('角色名称') })
   @IsOptional()
   name?: string;
-
-  /**
-   * 是否内置角色
-   */
-  @IsBoolean({ message: VMH.boolean.isBoolean('是否内置角色') })
-  @Type(() => Boolean)
-  @IsOptional()
-  isBuiltin?: boolean;
 
   /**
    * 页码

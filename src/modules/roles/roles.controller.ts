@@ -7,15 +7,18 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { ResponseMessage } from 'src/common';
+import { JwtAuthGuard } from 'src/common';
 
 import { CreateRoleDto, QueryRoleDto, UpdateRoleDto } from './dto';
 import { RolesService } from './roles.service';
 import {
   CreateRoleResponse,
   DeleteRoleResponse,
+  QueryNonBuiltinRolesResponse,
   QueryRoleDetailResponse,
   QueryRoleListResponse,
   UpdateRoleResponse,
@@ -25,6 +28,7 @@ import {
  * 角色控制器
  */
 @Controller('roles')
+@UseGuards(JwtAuthGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
@@ -80,5 +84,14 @@ export class RolesController {
   @ResponseMessage('删除角色成功')
   async remove(@Param('id') id: string): Promise<DeleteRoleResponse['data']> {
     return await this.rolesService.remove(+id);
+  }
+
+  /**
+   * 查询非内置角色列表
+   */
+  @Get('non-builtin')
+  @ResponseMessage('查询非内置角色列表成功')
+  async findNonBuiltinRoles(): Promise<QueryNonBuiltinRolesResponse['data']> {
+    return await this.rolesService.findNonBuiltinRoles();
   }
 }

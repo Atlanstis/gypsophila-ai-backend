@@ -19,6 +19,7 @@
    - 查询单个角色
    - 更新角色
    - 删除角色
+   - 查询非内置角色列表
 
 3. [菜单接口](./菜单接口.md) - 菜单与权限管理相关接口
    - 菜单管理
@@ -253,20 +254,6 @@ Authorization: Bearer <token>
 | updatedAt | string | 最后更新时间 (ISO格式) |
 
 ### 示例
-
-#### 请求示例
-
-```bash
-# 使用 curl 发送请求
-curl -X POST \
-  "https://api.example.com/资源路径" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
-  -d '{
-    "field1": "值1",
-    "field2": "值2"
-  }'
-```
 
 #### 响应示例
 
