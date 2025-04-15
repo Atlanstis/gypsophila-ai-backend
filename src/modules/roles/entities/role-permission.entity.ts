@@ -1,12 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-
-import { TimeEntity } from 'src/common';
 
 import { Permission } from '../../menus/entities/permission.entity';
 import { IRolePermissionEntity } from '../types/entity.types';
@@ -16,10 +16,7 @@ import { Role } from './role.entity';
  * 角色权限关联实体
  */
 @Entity('role_permissions')
-export class RolePermission
-  extends TimeEntity
-  implements IRolePermissionEntity
-{
+export class RolePermission implements IRolePermissionEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -42,4 +39,29 @@ export class RolePermission
   })
   @JoinColumn({ name: 'permission_id' })
   permission: Permission;
+
+  /**
+   * 创建时间
+   */
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'datetime',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '创建时间',
+  })
+  createdAt: Date;
+
+  /**
+   * 更新时间
+   */
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'datetime',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+    comment: '更新时间',
+  })
+  updatedAt: Date;
 }

@@ -1,7 +1,6 @@
 /**
  * 菜单模块实体类型定义
  */
-import { TimeEntity } from 'src/common';
 import { IRoleEntity, IRolePermissionEntity } from 'src/modules/roles/types';
 
 /**
@@ -22,7 +21,7 @@ export enum MenuModule {
 /**
  * 菜单实体接口
  */
-export interface IMenuEntity extends TimeEntity {
+export interface IMenuEntity {
   /**
    * 主键ID
    */
@@ -102,12 +101,22 @@ export interface IMenuEntity extends TimeEntity {
    * 角色菜单关联
    */
   roleMenus?: IRoleMenuEntity[];
+
+  /**
+   * 创建时间
+   */
+  createdAt: Date;
+
+  /**
+   * 更新时间
+   */
+  updatedAt: Date;
 }
 
 /**
  * 权限实体接口
  */
-export interface IPermissionEntity extends TimeEntity {
+export interface IPermissionEntity {
   /**
    * 主键ID
    */
@@ -137,12 +146,22 @@ export interface IPermissionEntity extends TimeEntity {
    * 角色权限关联
    */
   rolePermissions?: IRolePermissionEntity[];
+
+  /**
+   * 创建时间
+   */
+  createdAt: Date;
+
+  /**
+   * 更新时间
+   */
+  updatedAt: Date;
 }
 
 /**
  * 角色菜单关联实体接口
  */
-export interface IRoleMenuEntity extends TimeEntity {
+export interface IRoleMenuEntity {
   /**
    * 主键ID
    */
@@ -167,4 +186,14 @@ export interface IRoleMenuEntity extends TimeEntity {
    * 菜单
    */
   menu?: IMenuEntity;
+
+  /**
+   * 创建时间
+   */
+  createdAt: Date;
+
+  /**
+   * 更新时间
+   */
+  updatedAt: Date;
 }

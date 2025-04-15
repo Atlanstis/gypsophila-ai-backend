@@ -1,12 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-
-import { TimeEntity } from 'src/common';
 
 import { User } from '../../users/entities/user.entity';
 import { IUserRoleEntity } from '../types/entity.types';
@@ -16,7 +16,7 @@ import { Role } from './role.entity';
  * 用户角色关联实体
  */
 @Entity('user_roles')
-export class UserRole extends TimeEntity implements IUserRoleEntity {
+export class UserRole implements IUserRoleEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -39,4 +39,29 @@ export class UserRole extends TimeEntity implements IUserRoleEntity {
   })
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  /**
+   * 创建时间
+   */
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'datetime',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '创建时间',
+  })
+  createdAt: Date;
+
+  /**
+   * 更新时间
+   */
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'datetime',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+    comment: '更新时间',
+  })
+  updatedAt: Date;
 }

@@ -1,6 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { TimeEntity } from 'src/common';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 import { UserRole } from '../../roles/entities/user-role.entity';
 import { IUserEntity } from '../types/entity.types';
@@ -15,7 +20,7 @@ import { UserAuth } from './user-auth.entity';
  * 用户实体
  */
 @Entity('users')
-export class User extends TimeEntity implements IUserEntity {
+export class User implements IUserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -36,4 +41,29 @@ export class User extends TimeEntity implements IUserEntity {
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   userRoles?: UserRole[];
+
+  /**
+   * 创建时间
+   */
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'datetime',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '创建时间',
+  })
+  createdAt: Date;
+
+  /**
+   * 更新时间
+   */
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'datetime',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+    comment: '更新时间',
+  })
+  updatedAt: Date;
 }
