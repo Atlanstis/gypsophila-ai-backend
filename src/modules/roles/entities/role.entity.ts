@@ -7,14 +7,15 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { RoleMenu } from '../../menus/entities/role-menu.entity';
+import { RoleMenu } from 'src/modules/menus/entities';
+import { UserRole } from 'src/modules/users/entities';
+
 import {
   ROLE_DESCRIPTION_MAX_LENGTH,
   ROLE_NAME_MAX_LENGTH,
 } from '../roles.constants';
 import { IRoleEntity } from '../types/entity.types';
 import { RolePermission } from './role-permission.entity';
-import { UserRole } from './user-role.entity';
 
 /**
  * 角色实体

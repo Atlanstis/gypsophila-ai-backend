@@ -1,7 +1,7 @@
 /**
  * 用户模块实体类型定义
  */
-import { IUserRoleEntity } from 'src/modules/roles/types';
+import { IRoleEntity } from 'src/modules/roles/types';
 
 /**
  * 用户实体接口
@@ -98,4 +98,39 @@ export interface IUserAuthEntity {
    * 关联的用户
    */
   user?: IUserEntity;
+}
+
+/**
+ * 用户角色关联实体接口
+ */
+export interface IUserRoleEntity {
+  /**
+   * 用户角色关联ID
+   */
+  id: number;
+
+  /**
+   * 用户ID
+   */
+  userId: string;
+
+  /**
+   * 角色ID
+   */
+  roleId: number;
+
+  /**
+   * 创建时间
+   */
+  createdAt: Date;
+
+  /**
+   * 关联的用户
+   */
+  user?: IUserEntity;
+
+  /**
+   * 关联的角色
+   */
+  role?: IRoleEntity;
 }

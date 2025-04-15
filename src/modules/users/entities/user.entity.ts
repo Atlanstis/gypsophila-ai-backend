@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { UserRole } from '../../roles/entities/user-role.entity';
 import { IUserEntity } from '../types/entity.types';
 import {
   NICKNAME_MAX_LENGTH,
@@ -15,6 +14,7 @@ import {
   USER_AVATAR_MAX_LENGTH,
 } from '../users.constants';
 import { UserAuth } from './user-auth.entity';
+import { UserRole } from './user-role.entity';
 
 /**
  * 用户实体
