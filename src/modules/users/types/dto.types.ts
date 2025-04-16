@@ -26,6 +26,11 @@ export interface ICreateUserDto {
    * 用户密码
    */
   password: string;
+
+  /**
+   * 角色ID列表
+   */
+  roles: number[];
 }
 
 /**
@@ -41,6 +46,11 @@ export interface IUpdateUserDto {
    * 用户昵称
    */
   nickname?: string;
+
+  /**
+   * 角色ID列表
+   */
+  roles?: number[];
 }
 
 /**

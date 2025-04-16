@@ -1,5 +1,8 @@
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   Length,
@@ -68,4 +71,16 @@ export class CreateUserDto implements ICreateUserDto {
   @IsString({ message: VMH.string.isString('密码') })
   @IsNotEmpty({ message: VMH.common.isNotEmpty('密码') })
   password: string;
+
+  /**
+   * 角色ID列表
+   */
+  @IsNumber(
+    {},
+    { each: true, message: VMH.number.isNumber('角色ID列表内各项') },
+  )
+  @ArrayNotEmpty({ message: VMH.common.isNotEmpty('角色ID列表') })
+  @IsArray({ message: VMH.array.isArray('角色ID列表') })
+  @IsNotEmpty({ message: VMH.common.isNotEmpty('角色ID列表') })
+  roles: number[];
 }

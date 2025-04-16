@@ -1,14 +1,15 @@
 import * as argon2 from 'argon2';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { BusinessException } from 'src/common';
+import { BusinessException, compareArrays } from 'src/common';
 import { TransactionService } from 'src/database/transaction.service';
+import { Role } from 'src/modules/roles/entities';
 
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from './dto';
-import { User, UserAuth } from './entities';
+import { User, UserAuth, UserRole } from './entities';
 import { AuthType, QueryUserListResponse } from './types';
 
 /**
@@ -19,6 +20,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
     private readonly transactionService: TransactionService,
   ) {}
 
@@ -37,6 +40,28 @@ export class UsersService {
   }
 
   /**
+   * 验证角色
+   * @param roleIds 角色ID列表
+   * @returns 角色列表
+   */
+  private async validateRoles(roleIds: number[]): Promise<Role[]> {
+    const roles = await this.roleRepository.findBy({ id: In(roleIds) });
+
+    // 检查是否所有角色都存在
+    if (roles.length !== roleIds.length) {
+      throw new BusinessException('存在无效的角色ID');
+    }
+
+    // 检查是否包含内置角色
+    const builtinRole = roles.find((role) => role.isBuiltin);
+    if (builtinRole) {
+      throw new BusinessException(`不能分配内置角色 ${builtinRole.name}`);
+    }
+
+    return roles;
+  }
+
+  /**
    * 创建用户
    */
   async create(createUserDto: CreateUserDto): Promise<void> {
@@ -49,6 +74,9 @@ export class UsersService {
         `登录用户名 ${createUserDto.username} 已存在`,
       );
     }
+
+    // 验证角色
+    await this.validateRoles(createUserDto.roles);
 
     // 使用事务执行用户创建
     await this.transactionService.executeTransaction(async (manager) => {
@@ -74,6 +102,15 @@ export class UsersService {
 
       // 保存用户认证信息
       await manager.save(userAuth);
+
+      // 创建用户角色关联
+      for (const roleId of createUserDto.roles) {
+        const userRole = manager.create(UserRole, {
+          userId: savedUser.id,
+          roleId,
+        });
+        await manager.save(userRole);
+      }
     });
   }
 
@@ -138,6 +175,7 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
+      relations: ['userRoles', 'userRoles.role'],
     });
 
     if (!user) {
@@ -165,12 +203,48 @@ export class UsersService {
       throw new BusinessException('不能修改内置用户');
     }
 
-    // 更新用户基本信息
-    if (updateUserDto.nickname) user.nickname = updateUserDto.nickname;
-    if (updateUserDto.avatar !== undefined) user.avatar = updateUserDto.avatar;
+    // 使用事务执行用户更新
+    await this.transactionService.executeTransaction(async (manager) => {
+      // 更新用户基本信息
+      if (updateUserDto.nickname) user.nickname = updateUserDto.nickname;
+      if (updateUserDto.avatar !== undefined)
+        user.avatar = updateUserDto.avatar;
 
-    // 保存用户信息
-    await this.userRepository.save(user);
+      // 保存用户信息
+      await manager.save(user);
+
+      // 如果更新角色
+      if (updateUserDto.roles) {
+        // 验证角色
+        await this.validateRoles(updateUserDto.roles);
+
+        // 获取旧的用户角色关联
+        const userRoles = await manager.find(UserRole, {
+          where: { userId: id },
+        });
+
+        //  比对前后角色ID列表
+        const oldRoleIds = userRoles.map((userRole) => userRole.roleId);
+        const newRoleIds = updateUserDto.roles;
+        const { itemsToDelete: deleteRoleIds, itemsToAdd: addRoleIds } =
+          compareArrays(oldRoleIds, newRoleIds);
+
+        // 删除需要删除的角色关联
+        await manager.delete(UserRole, {
+          userId: id,
+          roleId: In(deleteRoleIds),
+        });
+
+        // 创建新的角色关联
+        for (const roleId of addRoleIds) {
+          const userRole = manager.create(UserRole, {
+            userId: id,
+            roleId,
+          });
+          await manager.save(userRole);
+        }
+      }
+    });
   }
 
   /**
@@ -194,6 +268,9 @@ export class UsersService {
     await this.transactionService.executeTransaction(async (manager) => {
       // 先删除用户认证信息
       await manager.delete(UserAuth, { userId: id });
+
+      // 再删除用户角色关联
+      await manager.delete(UserRole, { userId: id });
 
       // 再删除用户
       await manager.remove(user);

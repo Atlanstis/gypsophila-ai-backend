@@ -1,4 +1,10 @@
-import { IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 import { ValidationMessageHelper as VMH } from 'src/common/helpers/validation-message.helper';
 
@@ -36,4 +42,15 @@ export class UpdateUserDto implements IUpdateUserDto {
   @IsString({ message: VMH.string.isString('用户昵称') })
   @IsOptional()
   nickname?: string;
+
+  /**
+   * 角色ID列表
+   */
+  @IsNumber(
+    {},
+    { each: true, message: VMH.number.isNumber('角色ID列表内各项') },
+  )
+  @IsArray({ message: VMH.array.isArray('角色ID列表') })
+  @IsOptional()
+  roles?: number[];
 }

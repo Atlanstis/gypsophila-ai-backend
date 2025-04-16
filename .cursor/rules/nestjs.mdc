@@ -134,3 +134,7 @@ You are a senior TypeScript programmer with experience in the NestJS framework a
 ### Api
 - No Swagger.
 
+### DTO
+- Use [validation-message.helper.ts](mdc:src/common/helpers/validation-message.helper.ts) to generate error message.
+- Refer to [04-参数校验模块.md](mdc:docs/使用指南/04-参数校验模块.md).
+
