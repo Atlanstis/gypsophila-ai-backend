@@ -35,7 +35,7 @@ export class AuthController {
    * 用于客户端对敏感数据进行加密
    */
   @Get('public-key')
-  async getPublicKey(): Promise<GetPublicKeyResponse['data']> {
+  async getPublicKey(): Promise<GetPublicKeyResponse> {
     const publicKey = await this.rsaService.getPublicKey();
     return { publicKey };
   }
@@ -47,8 +47,8 @@ export class AuthController {
   @ResponseMessage('登录成功')
   async login(
     @Body(DecryptField('password')) loginDto: LoginDto,
-  ): Promise<LoginResponse['data']> {
-    return this.authService.login(loginDto);
+  ): Promise<LoginResponse> {
+    return await this.authService.login(loginDto);
   }
 
   /**
@@ -58,8 +58,8 @@ export class AuthController {
   @ResponseMessage('令牌刷新成功')
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
-  ): Promise<RefreshTokenResponse['data']> {
-    return this.authService.refreshTokens(refreshTokenDto.refreshToken);
+  ): Promise<RefreshTokenResponse> {
+    return await this.authService.refreshTokens(refreshTokenDto.refreshToken);
   }
 
   /**
@@ -69,7 +69,7 @@ export class AuthController {
   @Get('info')
   async getUserInfo(
     @CurrentUser() user: ICurrentUser,
-  ): Promise<GetUserInfoResponse['data']> {
+  ): Promise<GetUserInfoResponse> {
     // 返回JWT验证中提取的用户信息
     return user;
   }
@@ -80,9 +80,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @ResponseMessage('登出成功')
-  async logout(
-    @CurrentUser('id') userId: string,
-  ): Promise<LogoutResponse['data']> {
+  async logout(@CurrentUser('id') userId: string): Promise<LogoutResponse> {
     return await this.authService.logout(userId);
   }
 }
