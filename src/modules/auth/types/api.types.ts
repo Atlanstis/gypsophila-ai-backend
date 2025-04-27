@@ -1,8 +1,7 @@
 /**
  * 认证模块类型定义
  */
-import { ICurrentUser } from 'src/common/decorators/user.decorator';
-
+import { ICurrentUser } from '../../../common/decorators/user.decorator';
 import { ITokenPair } from './business.types';
 import { ILoginDto, IRefreshTokenDto } from './dto.types';
 
