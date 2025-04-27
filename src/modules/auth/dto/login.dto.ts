@@ -2,9 +2,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ValidationMessageHelper as VMH } from 'src/common';
 
-import { ILoginDto } from '../types/dto.types';
-
-export class LoginDto implements ILoginDto {
+export class LoginDto {
   /**
    * 用户名
    */
