@@ -1,7 +1,6 @@
 import { ParseIntPipe, ParseIntPipeOptions } from '@nestjs/common';
 
-import { StatusCode } from '../enums/status-code.enum';
-import { BusinessException } from '../exceptions/business.exception';
+import { ParamException } from '../exceptions';
 
 /**
  * 数字验证管道工厂
@@ -20,10 +19,7 @@ export class NumberValidationPipeFactory {
   ): ParseIntPipe {
     const options: ParseIntPipeOptions = {
       exceptionFactory: () =>
-        new BusinessException(
-          `${property}格式错误，应为有效的数字格式`,
-          StatusCode.PARAMETER_ERROR,
-        ),
+        new ParamException(`${property}格式错误，应为有效的数字格式`),
       ...customOptions,
     };
 

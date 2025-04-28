@@ -36,7 +36,7 @@ export type GetPublicKeyResponse = { publicKey: string };
 /**
  * 获取用户信息响应类型
  */
-export type GetUserInfoResponse = CurrentUser;
+export type GetAuthInfoResponse = CurrentUser;
 
 /**
  * 登出响应类型

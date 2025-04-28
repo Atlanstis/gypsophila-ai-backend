@@ -1,7 +1,6 @@
 import { ParseUUIDPipe, ParseUUIDPipeOptions } from '@nestjs/common';
 
-import { StatusCode } from '../enums/status-code.enum';
-import { BusinessException } from '../exceptions/business.exception';
+import { ParamException } from '../exceptions';
 
 /**
  * UUID 验证管道工厂
@@ -20,10 +19,7 @@ export class UuidValidationPipeFactory {
   ): ParseUUIDPipe {
     const options: ParseUUIDPipeOptions = {
       exceptionFactory: () =>
-        new BusinessException(
-          `${property}格式错误，应为有效的UUID格式`,
-          StatusCode.PARAMETER_ERROR,
-        ),
+        new ParamException(`${property}格式错误，应为有效的UUID格式`),
       ...customOptions,
     };
 

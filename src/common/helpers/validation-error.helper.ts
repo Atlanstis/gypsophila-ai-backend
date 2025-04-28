@@ -1,7 +1,6 @@
 import { ValidationError } from 'class-validator';
 
-import { StatusCode } from '../enums/status-code.enum';
-import { BusinessException } from '../exceptions/business.exception';
+import { ParamException } from '../exceptions';
 
 /**
  * 验证错误帮助类
@@ -42,12 +41,12 @@ export class ValidationErrorHelper {
   }
 
   /**
-   * 将验证错误数组转换为业务异常
+   * 将验证错误数组转换为异常
    * @param errors ValidationError数组
-   * @returns BusinessException
+   * @returns ParamException
    */
-  static toBusinessException(errors: ValidationError[]): BusinessException {
+  static toException(errors: ValidationError[]): ParamException {
     const message = this.formatValidationErrors(errors);
-    return new BusinessException(message, StatusCode.PARAMETER_ERROR);
+    return new ParamException(message);
   }
 }

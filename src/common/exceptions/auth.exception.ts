@@ -1,9 +1,11 @@
+import { HttpStatus } from '@nestjs/common';
+
 import { StatusCode } from '../enums/status-code.enum';
 
 /**
  * 授权相关错误码类型
  */
-export type AuthErrorCode =
+type AuthErrorCode =
   | StatusCode.UNAUTHORIZED
   | StatusCode.ACCESS_TOKEN_EXPIRED
   | StatusCode.ACCESS_TOKEN_INVALID
@@ -16,6 +18,7 @@ export type AuthErrorCode =
  */
 export class AuthException extends Error {
   private readonly errorCode: AuthErrorCode;
+  private readonly statusCode = HttpStatus.UNAUTHORIZED;
 
   constructor(
     message: string,
@@ -34,5 +37,9 @@ export class AuthException extends Error {
    */
   getErrorCode(): AuthErrorCode {
     return this.errorCode;
+  }
+
+  getStatusCode() {
+    return this.statusCode;
   }
 }

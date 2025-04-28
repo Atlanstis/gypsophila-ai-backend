@@ -12,8 +12,8 @@ import { RsaService } from 'src/rsa';
 import { AuthService } from './auth.service';
 import { LoginDto, RefreshTokenDto } from './dto';
 import {
+  GetAuthInfoResponse,
   GetPublicKeyResponse,
-  GetUserInfoResponse,
   LoginResponse,
   LogoutResponse,
   RefreshTokenResponse,
@@ -69,7 +69,7 @@ export class AuthController {
   @Get('info')
   async getUserInfo(
     @CurrentUser() user: ICurrentUser,
-  ): Promise<GetUserInfoResponse> {
+  ): Promise<GetAuthInfoResponse> {
     // 返回JWT验证中提取的用户信息
     return user;
   }

@@ -4,7 +4,7 @@ import { parse } from 'yaml';
 
 import { Injectable, Logger as NestLogger } from '@nestjs/common';
 
-import { BusinessException, StatusCode } from 'src/common';
+import { BusinessException, ConfigException } from 'src/common';
 
 import { configSchema } from './config.schema';
 
@@ -156,7 +156,7 @@ export class ConfigService {
           .join(', ');
         const errorMsg = `配置验证失败: ${errorDetails}`;
         this.nestLogger.error(errorMsg);
-        throw new BusinessException(errorMsg, StatusCode.INTERNAL_SERVER_ERROR);
+        throw new ConfigException(errorMsg);
       }
 
       this.nestLogger.log('配置加载成功');
@@ -167,7 +167,7 @@ export class ConfigService {
       }
       const errorMsg = `加载配置文件失败: ${error.message}`;
       this.nestLogger.error(errorMsg);
-      throw new BusinessException(errorMsg, StatusCode.INTERNAL_SERVER_ERROR);
+      throw new ConfigException(errorMsg);
     }
   }
 
@@ -199,16 +199,10 @@ export class ConfigService {
     if (subKey) {
       const section = this.config[key];
       if (!section || typeof section !== 'object') {
-        throw new BusinessException(
-          `配置项 ${key} 不存在或不是对象类型`,
-          StatusCode.INTERNAL_SERVER_ERROR,
-        );
+        throw new ConfigException(`配置项 ${key} 不存在或不是对象类型`);
       }
       if (!(String(subKey) in section)) {
-        throw new BusinessException(
-          `配置项 ${key}.${String(subKey)} 不存在`,
-          StatusCode.INTERNAL_SERVER_ERROR,
-        );
+        throw new ConfigException(`配置项 ${key}.${String(subKey)} 不存在`);
       }
       return section[subKey];
     }
