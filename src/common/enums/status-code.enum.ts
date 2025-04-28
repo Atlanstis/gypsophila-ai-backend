@@ -4,7 +4,7 @@
  * XXX: HTTP状态码
  * YYY: 业务码（000表示无特定业务场景）
  */
-export enum StatusCode {
+export const enum StatusCode {
   /** 接口执行成功 */
   SUCCESS = 200000,
   /** 业务执行失败 */

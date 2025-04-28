@@ -31,10 +31,7 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new AuthException(
-        '缺少访问令牌，请提供有效的 JWT Token',
-        StatusCode.UNAUTHORIZED,
-      );
+      throw new AuthException('缺少访问令牌', StatusCode.UNAUTHORIZED);
     }
 
     try {
@@ -52,16 +49,30 @@ export class JwtAuthGuard implements CanActivate {
       }
 
       // 验证Redis中是否存在此令牌
-      const redisKey = AuthRedisKey.accessToken(payload.sub);
-      const storedToken = await this.redisService.get(redisKey);
+      const accessTokenKey = AuthRedisKey.accessToken(payload.sub);
+      const refreshTokenKey = AuthRedisKey.refreshToken(payload.sub);
+      const storedAccessToken = await this.redisService.get(accessTokenKey);
+      const storedRefreshToken = await this.redisService.get(refreshTokenKey);
 
-      if (!storedToken) {
-        throw new AuthException(
-          '访问令牌已失效',
-          StatusCode.ACCESS_TOKEN_INVALID,
-        );
+      // 如果访问令牌不存在，则检查刷新令牌
+      if (!storedAccessToken) {
+        if (!storedRefreshToken) {
+          // 如果刷新令牌也不存在，则抛出错误
+          throw new AuthException(
+            '访问令牌已失效',
+            StatusCode.ACCESS_TOKEN_INVALID,
+          );
+        } else {
+          // 如果刷新令牌存在，则使用刷新令牌重新生成访问令牌
+          throw new AuthException(
+            '访问令牌已过期',
+            StatusCode.ACCESS_TOKEN_EXPIRED,
+          );
+        }
       }
-      if (storedToken !== token) {
+      // 如果访问令牌存在，则检查是否与请求中的令牌一致
+      if (storedAccessToken !== token) {
+        // 如果令牌不一致，则抛出错误
         throw new AuthException(
           '已在其他地方登录，访问令牌已失效',
           StatusCode.ACCESS_TOKEN_INVALID,

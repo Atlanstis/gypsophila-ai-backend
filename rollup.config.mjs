@@ -8,7 +8,7 @@ export default defineConfig({
   input: './src/types/api/index.ts',
   output: {
     // 输出到dist-types目录的单一文件
-    file: './dist-types/index.d.ts',
+    file: './dist-types/api.ts',
     format: 'es',
   },
   external: [

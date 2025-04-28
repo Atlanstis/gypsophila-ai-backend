@@ -54,13 +54,25 @@ async function buildTypes() {
     console.log('类型文件构建完成');
 
     // 验证构建结果
-    const indexDtsPath = path.resolve(typesDir, 'index.d.ts');
-    if (fs.existsSync(indexDtsPath)) {
-      // 清理除了 index.d.ts 之外的所有文件
-      cleanDirectory(typesDir, ['index.d.ts']);
-      console.log('成功生成优化后的类型文件：', indexDtsPath);
+    const apiTsPath = path.resolve(typesDir, 'api.ts');
+    if (fs.existsSync(apiTsPath)) {
+      // 清理除了 api.ts 之外的所有文件
+      cleanDirectory(typesDir, ['api.ts']);
+
+      // 读取生成的类型文件内容
+      const content = fs.readFileSync(apiTsPath, 'utf-8');
+
+      // 去除enum的declare修饰
+      const updatedContent = content
+        .replace(/declare const enum/g, 'const enum')
+        .replace(/declare enum/g, 'enum');
+
+      // 写回文件
+      fs.writeFileSync(apiTsPath, updatedContent, 'utf-8');
+
+      console.log('成功生成优化后的类型文件：', apiTsPath);
     } else {
-      console.error('未找到生成的类型文件：', indexDtsPath);
+      console.error('未找到生成的类型文件：', apiTsPath);
     }
   } catch (error) {
     console.error('构建类型文件时出错：', error);
